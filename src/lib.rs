@@ -11,7 +11,7 @@ use axidma_pac;
 extern crate log;
 
 extern crate alloc;
-use alloc::{vec::Vec, sync::Arc};
+use alloc::sync::Arc;
 pub use transfer::{TxTransfer, RxTransfer};
 use core::{
     arch::asm,
@@ -84,7 +84,7 @@ pub struct AxiDmaIntr {
 
 impl AxiDma {
     const RESET_TIMEOUT: isize = 500;
-    pub fn new(config: AxiDmaConfig, rx_pin_buf: Pin<&'static mut [u8]>) -> Arc<Self> {
+    pub fn new(config: AxiDmaConfig) -> Arc<Self> {
         let max_transfer_len = (1usize << config.sg_length_width) - 1;
         let tx_bd_ring = if config.has_mm2s {
             Some(Mutex::new(AxiDmaBdRing::new(AxiDmaBdRingConfig {
@@ -99,7 +99,7 @@ impl AxiDma {
                 } else {
                     max_transfer_len
                 },
-            }, None)))
+            })))
         } else {
             None
         };
@@ -117,7 +117,7 @@ impl AxiDma {
                 } else {
                     max_transfer_len
                 },
-            }, Some(rx_pin_buf))))
+            })))
         } else {
             None
         };
@@ -349,7 +349,7 @@ impl AxiDma {
     {
         if let Some(ring) = self.tx_bd_ring.as_ref() {
             let mut ring = ring.lock();
-            ring.tx_submit(&buf);
+            ring.submit(&buf);
 
             let hardware: &axidma_pac::axi_dma::RegisterBlock =
                 unsafe { &*(self.base_address as *const _) };
@@ -402,10 +402,14 @@ impl AxiDma {
         }
     }
 
-    pub fn rx_submit(self: &Arc<Self>) {
+    pub fn rx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<RxTransfer<B>>
+    where
+        B: Deref,
+        B::Target: AsRef<[u8]> + 'static
+    {
         if let Some(ring) = self.rx_bd_ring.as_ref() {
             let mut ring = ring.lock();
-            ring.rx_submit();
+            ring.submit(&buf);
             let hardware: &axidma_pac::axi_dma::RegisterBlock =
                 unsafe { &*(self.base_address as *const _) };
             if ring.is_halted {
@@ -451,8 +455,10 @@ impl AxiDma {
             } else {
                 trace!("axidma::rx_to_hw: no pending BD, tail desc not updated");
             }
+            Some(RxTransfer::new(buf, self.clone()))
         } else {
             trace!("axidma::rx_submit: no rx ring!");
+            None
         }
     }
 
@@ -467,19 +473,18 @@ impl AxiDma {
     pub fn tx_from_hw(self: &Arc<Self>) {
         if let Some(ring) = self.tx_bd_ring.as_ref() {
             let mut ring = ring.lock();
-            ring.tx_from_hw();
+            ring.from_hw();
         } else {
             trace!("axidma::tx_from_hw: no tx ring!");
         }
     }
 
-    pub fn rx_from_hw(&self) -> Option<Vec<Pin<&'static [u8]>>> {
+    pub fn rx_from_hw(&self) {
         if let Some(ring) = self.rx_bd_ring.as_ref() {
             let mut ring = ring.lock();
-            ring.rx_from_hw()
+            ring.from_hw();
         } else {
             trace!("axidma::rx_from_hw: no rx ring!");
-            None
         }
     }
 }

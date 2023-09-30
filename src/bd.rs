@@ -44,6 +44,7 @@ impl AxiDmaBlockDesc {
         }
     }
 
+    #[allow(unused)]
     pub fn buf(&self) -> &'static [u8] {
         let addr_lsb = self.desc.buf_addr.read().buf_addr().bits() as usize;
         let addr_msb = self.desc.buf_addr_msb.read().buf_addr().bits() as usize;
