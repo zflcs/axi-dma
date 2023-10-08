@@ -345,7 +345,7 @@ impl AxiDma {
     pub fn tx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<TxTransfer<B>>
     where
         B: Deref,
-        B::Target: AsRef<[u8]> + 'static
+        B::Target: AsRef<[u8]>
     {
         if let Some(ring) = self.tx_bd_ring.as_ref() {
             let mut ring = ring.lock();
@@ -405,7 +405,7 @@ impl AxiDma {
     pub fn rx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<RxTransfer<B>>
     where
         B: Deref,
-        B::Target: AsRef<[u8]> + 'static
+        B::Target: AsRef<[u8]>
     {
         if let Some(ring) = self.rx_bd_ring.as_ref() {
             let mut ring = ring.lock();
@@ -463,11 +463,11 @@ impl AxiDma {
     }
 
     pub fn tx_wait(self: &Arc<Self>) {
-        while self.hardware().mm2s_dmasr.read().idle().is_not_idle() { }
+        while self.hardware().mm2s_dmasr.read().ioc_irq().is_no_intr() { }
     }
 
     pub fn rx_wait(self: &Arc<Self>) {
-        while self.hardware().s2mm_dmasr.read().idle().is_not_idle() { }
+        while self.hardware().s2mm_dmasr.read().ioc_irq().is_no_intr() { }
     }
 
     pub fn tx_from_hw(self: &Arc<Self>) {

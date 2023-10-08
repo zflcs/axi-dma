@@ -105,7 +105,7 @@ impl AxiDmaBdRing {
     pub fn submit<B>(&mut self, buffer: &Pin<B>) 
     where
         B: Deref,
-        B::Target: AsRef<[u8]> + 'static,
+        B::Target: AsRef<[u8]>,
     {
         let buf = (**buffer).as_ref();
         let start = self.bd_restart;
