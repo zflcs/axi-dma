@@ -463,11 +463,17 @@ impl AxiDma {
     }
 
     pub fn tx_wait(self: &Arc<Self>) {
-        while self.hardware().mm2s_dmasr.read().ioc_irq().is_no_intr() { }
+        let mut status = self.hardware().mm2s_dmasr.read();
+        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
+            status = self.hardware().mm2s_dmasr.read();
+        }
     }
 
     pub fn rx_wait(self: &Arc<Self>) {
-        while self.hardware().s2mm_dmasr.read().ioc_irq().is_no_intr() { }
+        let mut status = self.hardware().s2mm_dmasr.read();
+        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
+            status = self.hardware().s2mm_dmasr.read();
+        }
     }
 
     pub fn tx_from_hw(self: &Arc<Self>) {
