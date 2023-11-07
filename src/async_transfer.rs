@@ -1,9 +1,13 @@
-use core::{ops::Deref, pin::Pin, sync::atomic::{self, Ordering, compiler_fence, fence}, hint};
+/// This mod provide a async buffer.
+/// When the buffer is submitted, it don't need to wait for DMA to transfer complete.
+/// While the DMA tranfer complete, the buffer is dropped.
+
+use core::{ops::Deref, pin::Pin, sync::atomic::{self, Ordering, compiler_fence, fence}, hint, future::Future, task::{Context, Poll}};
 use alloc::sync::Arc;
 
 use crate::{AxiDma, io_fence};
 
-pub struct RxTransfer<B> 
+pub struct AsyncRxTransfer<B> 
 where
         B: Deref,
         B::Target: AsRef<[u8]> + 'static,
@@ -11,61 +15,102 @@ where
     // NOTE: always `Some` variant
     buffer: Option<Pin<B>>,
     dma: Arc<AxiDma>,
+    flag: bool,
 }
 
-pub struct TxTransfer<B> 
+impl<B> Unpin for AsyncRxTransfer<B> 
+where
+    B: Deref,
+    B::Target: AsRef<[u8]> + 'static
+{}
+
+impl<B> Future for AsyncRxTransfer<B> 
+where
+    B: Deref,
+    B::Target: AsRef<[u8]>,
+{
+    type Output = Pin<B>;
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        if !self.flag {
+            let waker = cx.waker();
+            self.dma.rx_wakers.lock().push_back(waker.clone());
+            self.flag = true;
+            Poll::Pending
+        } else {
+            atomic::compiler_fence(Ordering::SeqCst);
+            let buf = self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() });
+            self.dma.rx_intr_handler();
+            self.dma.rx_from_hw();
+            Poll::Ready(buf)
+        }
+    }
+}
+
+impl<B> AsyncRxTransfer<B> 
+where
+    B: Deref,
+    B::Target: AsRef<[u8]>,
+{
+    pub fn new(buf: Pin<B>, dma: Arc<AxiDma>) -> Self {
+        Self { buffer: Some(buf), dma, flag: false }
+    }
+}
+
+pub struct AsyncTxTransfer<B> 
 where
         B: Deref,
-        B::Target: AsRef<[u8]>,
+        B::Target: AsRef<[u8]> + 'static,
 {
     // NOTE: always `Some` variant
     buffer: Option<Pin<B>>,
     dma: Arc<AxiDma>,
+    flag: bool,
 }
 
-impl<B> RxTransfer<B> 
+impl<B> Unpin for AsyncTxTransfer<B> 
+where
+    B: Deref,
+    B::Target: AsRef<[u8]> + 'static
+{}
+
+impl<B> Future for AsyncTxTransfer<B> 
 where
     B: Deref,
     B::Target: AsRef<[u8]>,
 {
-
-    pub fn new(buf: Pin<B>, dma: Arc<AxiDma>) -> Self {
-        Self { buffer: Some(buf), dma }
-    }
-
-    /// Blocks until the transfer is done and returns the buffer
-    pub fn wait(mut self) -> Pin<B> {
-        self.dma.rx_wait();
-        atomic::compiler_fence(Ordering::SeqCst);
-        self.dma.rx_from_hw();
-        self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() })
+    type Output = Pin<B>;
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        if !self.flag {
+            let waker = cx.waker();
+            self.dma.tx_wakers.lock().push_back(waker.clone());
+            log::debug!("async transfer pending");
+            self.flag = true;
+            Poll::Pending
+        } else {
+            log::debug!("async transfer ready");
+            atomic::compiler_fence(Ordering::SeqCst);
+            let buf = self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() });
+            self.dma.tx_intr_handler();
+            self.dma.tx_from_hw();
+            Poll::Ready(buf)
+        }
     }
 }
 
-impl<B> TxTransfer<B> 
+impl<B> AsyncTxTransfer<B> 
 where
     B: Deref,
     B::Target: AsRef<[u8]>,
 {
-
     pub fn new(buf: Pin<B>, dma: Arc<AxiDma>) -> Self {
-        Self { buffer: Some(buf), dma }
-    }
-
-    /// Blocks until the transfer is done and returns the buffer
-    pub fn wait(mut self) -> Pin<B> {
-        self.dma.tx_wait();
-        atomic::compiler_fence(Ordering::SeqCst);
-        self.dma.tx_from_hw();
-        self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() })
-
+        Self { buffer: Some(buf), dma, flag: false }
     }
 }
 
 
 impl AxiDma {
 
-    pub fn tx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<TxTransfer<B>>
+    pub fn tx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<AsyncTxTransfer<B>>
     where
         B: Deref,
         B::Target: AsRef<[u8]>
@@ -118,14 +163,14 @@ impl AxiDma {
             } else {
                 trace!("axidma::tx_to_hw: no pending BD, tail desc not updated");
             }
-            Some(TxTransfer::new(buf, self.clone()))
+            Some(AsyncTxTransfer::new(buf, self.clone()))
         } else {
             trace!("axidma::tx_submit: no tx ring!");
             None
         }
     }
 
-    pub fn rx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<RxTransfer<B>>
+    pub fn rx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<AsyncRxTransfer<B>>
     where
         B: Deref,
         B::Target: AsRef<[u8]>
@@ -178,25 +223,61 @@ impl AxiDma {
             } else {
                 trace!("axidma::rx_to_hw: no pending BD, tail desc not updated");
             }
-            Some(RxTransfer::new(buf, self.clone()))
+            Some(AsyncRxTransfer::new(buf, self.clone()))
         } else {
             trace!("axidma::rx_submit: no rx ring!");
             None
         }
     }
-    
-    pub fn tx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().mm2s_dmasr.read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().mm2s_dmasr.read();
-        }
+
+    pub fn tx_complete(self: &Arc<Self>) -> bool {
+        let status = self.hardware().mm2s_dmasr.read();
+        !(status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr())
     }
 
 
-    pub fn rx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().s2mm_dmasr.read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().s2mm_dmasr.read();
+    pub fn rx_complete(self: &Arc<Self>) -> bool {
+        let status = self.hardware().s2mm_dmasr.read();
+        !(status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr())
+    }
+
+    pub fn tx_intr_handler(self: &Arc<Self>) -> bool {
+        let sr = &self.hardware().mm2s_dmasr;
+        if sr.read().err_irq().is_detected() {
+            // dump regs
+            // reset
+            error!("axidma_intr: tx err intr detected");
+            sr.modify(|_, w| w.err_irq().set_bit());
+            return false;
         }
+        if sr.read().ioc_irq().is_detected() {
+            trace!("axidma_intr: tx cplt intr detected");
+            sr.modify(|_, w| w.ioc_irq().set_bit());
+        }
+        if sr.read().dly_irq().is_detected() {
+            trace!("axidma_intr: tx dly intr detected");
+            sr.modify(|_, w| w.dly_irq().set_bit());
+        }
+        true
+    }
+
+    pub fn rx_intr_handler(self: &Arc<Self>) -> bool {
+        let sr = &self.hardware().s2mm_dmasr;
+        if sr.read().err_irq().is_detected() {
+            // dump regs
+            // reset
+            error!("axidma: rx err intr detected");
+            sr.modify(|_, w| w.err_irq().set_bit());
+            return false;
+        }
+        if sr.read().ioc_irq().is_detected() {
+            trace!("axidma_intr: rx cplt intr detected");
+            sr.modify(|_, w| w.ioc_irq().set_bit());
+        }
+        if sr.read().dly_irq().is_detected() {
+            trace!("axidma_intr: rx dly intr detected");
+            sr.modify(|_, w| w.dly_irq().set_bit());
+        }
+        true
     }
 }

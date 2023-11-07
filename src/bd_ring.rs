@@ -68,7 +68,6 @@ impl AxiDmaBdRing {
         todo!()
     }
 
-    // pub fn create(&mut self, phys_addr: usize, virt_addr: usize, align: usize, bd_count: usize) {
     pub fn create(&mut self, bd_count: usize) {
         trace!("bd_ring::create: creating ring with {} BD", bd_count);
         self.all_cnt = 0;

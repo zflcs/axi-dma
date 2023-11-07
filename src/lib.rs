@@ -4,23 +4,34 @@
 mod bd;
 mod bd_ring;
 mod hw;
+#[cfg(feature = "async")]
+mod async_transfer;
+
+#[cfg(feature = "async")]
+pub use async_transfer::{AsyncRxTransfer, AsyncTxTransfer};
+
+#[cfg(feature = "async")]
+use core::task::Waker;
+
+#[cfg(feature = "sync")]
 pub mod transfer;
 
+#[cfg(feature = "sync")]
+pub use transfer::{TxTransfer, RxTransfer};
 use axidma_pac;
 #[macro_use]
 extern crate log;
 
 extern crate alloc;
-use alloc::sync::Arc;
-pub use transfer::{TxTransfer, RxTransfer};
+use alloc::{sync::Arc, collections::VecDeque};
+
 use core::{
     arch::asm,
     sync::atomic::{
         compiler_fence, fence,
         Ordering::{SeqCst, self}, AtomicBool,
-    }, ops::Deref,
+    },
 };
-use core::pin::Pin;
 
 pub use crate::hw::AXI_DMA_CONFIG;
 
@@ -45,7 +56,11 @@ pub struct AxiDma {
     // Mutable
     is_initialized: AtomicBool,
     tx_bd_ring: Option<Mutex<AxiDmaBdRing>>,
+    #[cfg(feature = "async")]
+    pub tx_wakers: Mutex<VecDeque<Waker>>,
     rx_bd_ring: Option<Mutex<AxiDmaBdRing>>,
+    #[cfg(feature = "async")]
+    pub rx_wakers: Mutex<VecDeque<Waker>>,
 }
 
 pub struct AxiDmaConfig {
@@ -130,6 +145,10 @@ impl AxiDma {
             tx_bd_ring,
             rx_bd_ring,
             is_initialized: AtomicBool::new(false),
+            #[cfg(feature = "async")]
+            tx_wakers: Mutex::new(VecDeque::new()),
+            #[cfg(feature = "async")]
+            rx_wakers: Mutex::new(VecDeque::new()),
         })
     }
 
@@ -339,140 +358,6 @@ impl AxiDma {
         if let Some(ring) = self.rx_bd_ring.as_ref() {
             let mut ring = ring.lock();
             ring.create(bd_count);
-        }
-    }
-
-    pub fn tx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<TxTransfer<B>>
-    where
-        B: Deref,
-        B::Target: AsRef<[u8]>
-    {
-        if let Some(ring) = self.tx_bd_ring.as_ref() {
-            let mut ring = ring.lock();
-            ring.submit(&buf);
-
-            let hardware: &axidma_pac::axi_dma::RegisterBlock =
-                unsafe { &*(self.base_address as *const _) };
-            if ring.is_halted {
-                // update cur desc
-                let addr = ring.head_desc_addr();
-                let addr_lsb = ((addr & 0xFFFF_FFFF) >> 6) as _;
-                let addr_msb = (addr >> 32) as _;
-                trace!("axidma::tx_to_hw: cur desc addr: 0x{:x}", addr);
-                unsafe {
-                    hardware
-                        .mm2s_curdesc
-                        .write(|w| w.curdesc_ptr().bits(addr_lsb));
-                    hardware
-                        .mm2s_curdesc_msb
-                        .write(|w| w.curdesc_ptr().bits(addr_msb));
-                }
-            } else {
-                trace!("axidma::tx_to_hw: ring running, cur desc not updated");
-            }
-            compiler_fence(SeqCst);
-            fence(SeqCst);
-            io_fence();
-
-            hardware.mm2s_dmacr.modify(|_, w| w.run_stop().run());
-            ring.is_halted = false;
-            if ring.pending_cnt > 0 {
-                ring.submit_cnt += ring.pending_cnt;
-                ring.pending_cnt = 0;
-                // update tail desc
-                let addr = ring.tail_desc_addr();
-                let addr_lsb = ((addr & 0xFFFF_FFFF) >> 6) as _;
-                let addr_msb = (addr >> 32) as _;
-                trace!("axidma::tx_to_hw: tail desc addr: 0x{:x}", addr);
-                unsafe {
-                    hardware
-                        .mm2s_taildesc
-                        .write(|w| w.taildesc_ptr().bits(addr_lsb));
-                    hardware
-                        .mm2s_taildesc_msb
-                        .write(|w| w.taildesc_ptr().bits(addr_msb));
-                }
-            } else {
-                trace!("axidma::tx_to_hw: no pending BD, tail desc not updated");
-            }
-            Some(TxTransfer::new(buf, self.clone()))
-        } else {
-            trace!("axidma::tx_submit: no tx ring!");
-            None
-        }
-    }
-
-    pub fn rx_submit<B>(self: &Arc<Self>, buf: Pin<B>) -> Option<RxTransfer<B>>
-    where
-        B: Deref,
-        B::Target: AsRef<[u8]>
-    {
-        if let Some(ring) = self.rx_bd_ring.as_ref() {
-            let mut ring = ring.lock();
-            ring.submit(&buf);
-            let hardware: &axidma_pac::axi_dma::RegisterBlock =
-                unsafe { &*(self.base_address as *const _) };
-            if ring.is_halted {
-                // update cur desc
-                let addr = ring.head_desc_addr();
-                let addr_lsb = ((addr & 0xFFFF_FFFF) >> 6) as _;
-                let addr_msb = (addr >> 32) as _;
-                trace!("axidma::rx_to_hw: cur desc addr: 0x{:x}", addr);
-
-                unsafe {
-                    hardware
-                        .s2mm_curdesc
-                        .write(|w| w.curdesc_ptr().bits(addr_lsb));
-                    hardware
-                        .s2mm_curdesc_msb
-                        .write(|w| w.curdesc_ptr().bits(addr_msb));
-                }
-            } else {
-                trace!("axidma::rx_to_hw: ring running, cur desc not updated");
-            }
-
-            compiler_fence(SeqCst);
-            fence(SeqCst);
-            io_fence();
-            hardware.s2mm_dmacr.modify(|_, w| w.run_stop().run());
-            ring.is_halted = false;
-            if ring.pending_cnt > 0 {
-                ring.submit_cnt += ring.pending_cnt;
-                ring.pending_cnt = 0;
-                // update tail desc
-                let addr = ring.tail_desc_addr();
-                let addr_lsb = ((addr & 0xFFFF_FFFF) >> 6) as _;
-                let addr_msb = (addr >> 32) as _;
-                trace!("axidma::rx_to_hw: tail desc addr: 0x{:x}", addr);
-                unsafe {
-                    hardware
-                        .s2mm_taildesc
-                        .write(|w| w.taildesc_ptr().bits(addr_lsb));
-                    hardware
-                        .s2mm_taildesc_msb
-                        .write(|w| w.taildesc_ptr().bits(addr_msb));
-                }
-            } else {
-                trace!("axidma::rx_to_hw: no pending BD, tail desc not updated");
-            }
-            Some(RxTransfer::new(buf, self.clone()))
-        } else {
-            trace!("axidma::rx_submit: no rx ring!");
-            None
-        }
-    }
-
-    pub fn tx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().mm2s_dmasr.read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().mm2s_dmasr.read();
-        }
-    }
-
-    pub fn rx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().s2mm_dmasr.read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().s2mm_dmasr.read();
         }
     }
 
