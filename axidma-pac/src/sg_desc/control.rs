@@ -1,202 +1,168 @@
 #[doc = "Register `control` reader"]
-pub struct R(crate::R<CONTROL_SPEC>);
-impl core::ops::Deref for R {
-    type Target = crate::R<CONTROL_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl From<crate::R<CONTROL_SPEC>> for R {
-    #[inline(always)]
-    fn from(reader: crate::R<CONTROL_SPEC>) -> Self {
-        R(reader)
-    }
-}
+pub type R = crate::R<ControlSpec>;
 #[doc = "Register `control` writer"]
-pub struct W(crate::W<CONTROL_SPEC>);
-impl core::ops::Deref for W {
-    type Target = crate::W<CONTROL_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl core::ops::DerefMut for W {
-    #[inline(always)]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-impl From<crate::W<CONTROL_SPEC>> for W {
-    #[inline(always)]
-    fn from(writer: crate::W<CONTROL_SPEC>) -> Self {
-        W(writer)
-    }
-}
+pub type W = crate::W<ControlSpec>;
 #[doc = "Field `buf_len` reader - Indicates the amount of space in bytes of the stream."]
-pub type BUF_LEN_R = crate::FieldReader<u32>;
+pub type BufLenR = crate::FieldReader<u32>;
 #[doc = "Field `buf_len` writer - Indicates the amount of space in bytes of the stream."]
-pub type BUF_LEN_W<'a, const O: u8> = crate::FieldWriter<'a, CONTROL_SPEC, 26, O, u32>;
-#[doc = "Field `eof` reader - End of Frame. Flag indicating the last buffer to be processed."]
-pub type EOF_R = crate::BitReader<EOF_A>;
+pub type BufLenW<'a, REG> = crate::FieldWriter<'a, REG, 26, u32>;
 #[doc = "End of Frame. Flag indicating the last buffer to be processed.\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum EOF_A {
+pub enum Eof {
     #[doc = "0: `0`"]
-    FALSE = 0,
+    False = 0,
     #[doc = "1: `1`"]
-    TRUE = 1,
+    True = 1,
 }
-impl From<EOF_A> for bool {
+impl From<Eof> for bool {
     #[inline(always)]
-    fn from(variant: EOF_A) -> Self {
+    fn from(variant: Eof) -> Self {
         variant as u8 != 0
     }
 }
-impl EOF_R {
+#[doc = "Field `eof` reader - End of Frame. Flag indicating the last buffer to be processed."]
+pub type EofR = crate::BitReader<Eof>;
+impl EofR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> EOF_A {
+    pub const fn variant(&self) -> Eof {
         match self.bits {
-            false => EOF_A::FALSE,
-            true => EOF_A::TRUE,
+            false => Eof::False,
+            true => Eof::True,
         }
     }
-    #[doc = "Checks if the value of the field is `FALSE`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_false(&self) -> bool {
-        *self == EOF_A::FALSE
+        *self == Eof::False
     }
-    #[doc = "Checks if the value of the field is `TRUE`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_true(&self) -> bool {
-        *self == EOF_A::TRUE
+        *self == Eof::True
     }
 }
 #[doc = "Field `eof` writer - End of Frame. Flag indicating the last buffer to be processed."]
-pub type EOF_W<'a, const O: u8> = crate::BitWriter<'a, CONTROL_SPEC, O, EOF_A>;
-impl<'a, const O: u8> EOF_W<'a, O> {
+pub type EofW<'a, REG> = crate::BitWriter<'a, REG, Eof>;
+impl<'a, REG> EofW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn false_(self) -> &'a mut W {
-        self.variant(EOF_A::FALSE)
+    pub fn false_(self) -> &'a mut crate::W<REG> {
+        self.variant(Eof::False)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn true_(self) -> &'a mut W {
-        self.variant(EOF_A::TRUE)
+    pub fn true_(self) -> &'a mut crate::W<REG> {
+        self.variant(Eof::True)
     }
 }
-#[doc = "Field `sof` reader - Start of Frame. Flag indicating the first buffer to be processed."]
-pub type SOF_R = crate::BitReader<SOF_A>;
 #[doc = "Start of Frame. Flag indicating the first buffer to be processed.\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SOF_A {
+pub enum Sof {
     #[doc = "0: `0`"]
-    FALSE = 0,
+    False = 0,
     #[doc = "1: `1`"]
-    TRUE = 1,
+    True = 1,
 }
-impl From<SOF_A> for bool {
+impl From<Sof> for bool {
     #[inline(always)]
-    fn from(variant: SOF_A) -> Self {
+    fn from(variant: Sof) -> Self {
         variant as u8 != 0
     }
 }
-impl SOF_R {
+#[doc = "Field `sof` reader - Start of Frame. Flag indicating the first buffer to be processed."]
+pub type SofR = crate::BitReader<Sof>;
+impl SofR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> SOF_A {
+    pub const fn variant(&self) -> Sof {
         match self.bits {
-            false => SOF_A::FALSE,
-            true => SOF_A::TRUE,
+            false => Sof::False,
+            true => Sof::True,
         }
     }
-    #[doc = "Checks if the value of the field is `FALSE`"]
-    #[inline(always)]
-    pub fn is_false(&self) -> bool {
-        *self == SOF_A::FALSE
-    }
-    #[doc = "Checks if the value of the field is `TRUE`"]
-    #[inline(always)]
-    pub fn is_true(&self) -> bool {
-        *self == SOF_A::TRUE
-    }
-}
-#[doc = "Field `sof` writer - Start of Frame. Flag indicating the first buffer to be processed."]
-pub type SOF_W<'a, const O: u8> = crate::BitWriter<'a, CONTROL_SPEC, O, SOF_A>;
-impl<'a, const O: u8> SOF_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn false_(self) -> &'a mut W {
-        self.variant(SOF_A::FALSE)
+    pub fn is_false(&self) -> bool {
+        *self == Sof::False
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn true_(self) -> &'a mut W {
-        self.variant(SOF_A::TRUE)
+    pub fn is_true(&self) -> bool {
+        *self == Sof::True
+    }
+}
+#[doc = "Field `sof` writer - Start of Frame. Flag indicating the first buffer to be processed."]
+pub type SofW<'a, REG> = crate::BitWriter<'a, REG, Sof>;
+impl<'a, REG> SofW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
+    #[doc = "`0`"]
+    #[inline(always)]
+    pub fn false_(self) -> &'a mut crate::W<REG> {
+        self.variant(Sof::False)
+    }
+    #[doc = "`1`"]
+    #[inline(always)]
+    pub fn true_(self) -> &'a mut crate::W<REG> {
+        self.variant(Sof::True)
     }
 }
 impl R {
     #[doc = "Bits 0:25 - Indicates the amount of space in bytes of the stream."]
     #[inline(always)]
-    pub fn buf_len(&self) -> BUF_LEN_R {
-        BUF_LEN_R::new(self.bits & 0x03ff_ffff)
+    pub fn buf_len(&self) -> BufLenR {
+        BufLenR::new(self.bits & 0x03ff_ffff)
     }
     #[doc = "Bit 26 - End of Frame. Flag indicating the last buffer to be processed."]
     #[inline(always)]
-    pub fn eof(&self) -> EOF_R {
-        EOF_R::new(((self.bits >> 26) & 1) != 0)
+    pub fn eof(&self) -> EofR {
+        EofR::new(((self.bits >> 26) & 1) != 0)
     }
     #[doc = "Bit 27 - Start of Frame. Flag indicating the first buffer to be processed."]
     #[inline(always)]
-    pub fn sof(&self) -> SOF_R {
-        SOF_R::new(((self.bits >> 27) & 1) != 0)
+    pub fn sof(&self) -> SofR {
+        SofR::new(((self.bits >> 27) & 1) != 0)
     }
 }
 impl W {
     #[doc = "Bits 0:25 - Indicates the amount of space in bytes of the stream."]
     #[inline(always)]
     #[must_use]
-    pub fn buf_len(&mut self) -> BUF_LEN_W<0> {
-        BUF_LEN_W::new(self)
+    pub fn buf_len(&mut self) -> BufLenW<ControlSpec> {
+        BufLenW::new(self, 0)
     }
     #[doc = "Bit 26 - End of Frame. Flag indicating the last buffer to be processed."]
     #[inline(always)]
     #[must_use]
-    pub fn eof(&mut self) -> EOF_W<26> {
-        EOF_W::new(self)
+    pub fn eof(&mut self) -> EofW<ControlSpec> {
+        EofW::new(self, 26)
     }
     #[doc = "Bit 27 - Start of Frame. Flag indicating the first buffer to be processed."]
     #[inline(always)]
     #[must_use]
-    pub fn sof(&mut self) -> SOF_W<27> {
-        SOF_W::new(self)
-    }
-    #[doc = "Writes raw bits to the register."]
-    #[inline(always)]
-    pub unsafe fn bits(&mut self, bits: u32) -> &mut Self {
-        self.0.bits(bits);
-        self
+    pub fn sof(&mut self) -> SofW<ControlSpec> {
+        SofW::new(self, 27)
     }
 }
-#[doc = "\n\nThis register you can [`read`](crate::generic::Reg::read), [`write_with_zero`](crate::generic::Reg::write_with_zero), [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`modify`](crate::generic::Reg::modify). See [API](https://docs.rs/svd2rust/#read--modify--write-api).\n\nFor information about available fields see [control](index.html) module"]
-pub struct CONTROL_SPEC;
-impl crate::RegisterSpec for CONTROL_SPEC {
+#[doc = "Control of BD\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`control::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`control::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
+pub struct ControlSpec;
+impl crate::RegisterSpec for ControlSpec {
     type Ux = u32;
 }
-#[doc = "`read()` method returns [control::R](R) reader structure"]
-impl crate::Readable for CONTROL_SPEC {
-    type Reader = R;
-}
-#[doc = "`write(|w| ..)` method takes [control::W](W) writer structure"]
-impl crate::Writable for CONTROL_SPEC {
-    type Writer = W;
-    const ZERO_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
-    const ONE_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
+#[doc = "`read()` method returns [`control::R`](R) reader structure"]
+impl crate::Readable for ControlSpec {}
+#[doc = "`write(|w| ..)` method takes [`control::W`](W) writer structure"]
+impl crate::Writable for ControlSpec {
+    type Safety = crate::Unsafe;
+    const ZERO_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
+    const ONE_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
 }
 #[doc = "`reset()` method sets control to value 0"]
-impl crate::Resettable for CONTROL_SPEC {
-    const RESET_VALUE: Self::Ux = 0;
+impl crate::Resettable for ControlSpec {
+    const RESET_VALUE: u32 = 0;
 }

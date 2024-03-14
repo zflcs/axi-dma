@@ -971,6 +971,7 @@
         </register>
         <register>
           <name>control</name>
+          <description>Control of BD</description>
           <addressOffset>0x18</addressOffset>
           <access>read-write</access>
           <fields>
@@ -1013,6 +1014,7 @@
         </register>
         <register>
           <name>status</name>
+          <description>Status of BD</description>
           <addressOffset>0x1c</addressOffset>
           <access>read-only</access>
           <fields>
@@ -1139,6 +1141,397 @@
         </register>
       </registers>
     </peripheral>
+
+    <peripheral>
+      <name>CHANNEL</name>
+      <description>The Registers of channel</description>
+      <baseAddress>0x0</baseAddress>
+      <registers>
+        <register>
+          <name>dmacr</name>
+          <description>DMA Channel Control register</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>run_stop</name>
+              <description>Run / Stop control for controlling running and stopping of the DMA channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>STOP</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUN</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>reset</name>
+              <description>Soft reset for resetting the AXI DMA core</description>
+              <bitRange>[2:2]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NORMAL</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RESET</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>keyhole</name>
+              <description>Keyhole Read</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>cyclic_enable</name>
+              <description>When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode
+                without any user intervention</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq_en</name>
+              <description>Interrupt on Complete (IOC) Interrupt Enable</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq_en</name>
+              <description>Interrupt on Delay Timer Interrupt Enable</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq_en</name>
+              <description>Interrupt on Error Interrupt Enable</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold</name>
+              <description>Interrupt Threshold</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay</name>
+              <description>Interrupt Delay Time Out</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>dmasr</name>
+          <description>DMA Channel Status register</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>halted</name>
+              <description>DMA Channel Halted. Indicates the run/stop state of the DMA channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>RUNNING</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HALTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>idle</name>
+              <description>DMA Channel Idle. Indicates the state of AXI DMA operations.</description>
+              <bitRange>[1:1]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NOT_IDLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>IDLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_incld</name>
+              <description>Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter
+                Gather engine is included and the AXI DMA is configured for Scatter Gather mode.</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>SG_DISABLED</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SG_ENABLED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_int_err</name>
+              <description>DMA Internal Error. Internal error occurs if the buffer length specified
+                in the fetched descriptor is set to 0.</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_slv_err</name>
+              <description>DMA Slave Error. This error occurs if the slave read from the Memory Map
+                interface issues a Slave Error.</description>
+              <bitRange>[5:5]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_dec_err</name>
+              <description>DMA Decode Error. This error occurs if the address request points to an
+                invalid address.</description>
+              <bitRange>[6:6]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_int_err</name>
+              <description>Scatter Gather Internal Error. This error occurs if a descriptor with the
+                “Complete bit” already set is fetched.</description>
+              <bitRange>[8:8]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_slv_err</name>
+              <description>Scatter Gather Slave Error. This error occurs if the slave read from on
+                the Memory Map interface issues a Slave error.</description>
+              <bitRange>[9:9]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_dec_err</name>
+              <description>Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or
+                NXTDESC_PTR points to an invalid address.</description>
+              <bitRange>[10:10]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq</name>
+              <description>Interrupt on Complete (IOC)</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq</name>
+              <description>Interrupt on Delay Timer</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq</name>
+              <description>Interrupt on Error</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold_sts</name>
+              <description>Interrupt Threshold Status. Indicates current interrupt threshold value.</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay_sts</name>
+              <description>Interrupt Delay Time Status. Indicates current interrupt delay time
+                value.</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>curdesc</name>
+          <description>Current Descriptor Pointer. Lower 32 bits of the address.</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current descriptor being worked on.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>curdesc_msb</name>
+          <description>Current Descriptor Pointer. Upper 32 bits of the address.</description>
+          <addressOffset>0xc</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current descriptor being worked on.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>taildesc</name>
+          <description>Tail Descriptor Pointer. Lower 32 bits of the address.</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>taildesc_msb</name>
+          <description>Tail Descriptor Pointer. Upper 32 bits of the address.</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+
   </peripherals>
 
 </device>

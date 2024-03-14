@@ -1,80 +1,40 @@
 #[doc = "Register `mm2s_sa` reader"]
-pub struct R(crate::R<MM2S_SA_SPEC>);
-impl core::ops::Deref for R {
-    type Target = crate::R<MM2S_SA_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl From<crate::R<MM2S_SA_SPEC>> for R {
-    #[inline(always)]
-    fn from(reader: crate::R<MM2S_SA_SPEC>) -> Self {
-        R(reader)
-    }
-}
+pub type R = crate::R<Mm2sSaSpec>;
 #[doc = "Register `mm2s_sa` writer"]
-pub struct W(crate::W<MM2S_SA_SPEC>);
-impl core::ops::Deref for W {
-    type Target = crate::W<MM2S_SA_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl core::ops::DerefMut for W {
-    #[inline(always)]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-impl From<crate::W<MM2S_SA_SPEC>> for W {
-    #[inline(always)]
-    fn from(writer: crate::W<MM2S_SA_SPEC>) -> Self {
-        W(writer)
-    }
-}
+pub type W = crate::W<Mm2sSaSpec>;
 #[doc = "Field `src_addr` reader - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
-pub type SRC_ADDR_R = crate::FieldReader<u32>;
+pub type SrcAddrR = crate::FieldReader<u32>;
 #[doc = "Field `src_addr` writer - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
-pub type SRC_ADDR_W<'a, const O: u8> = crate::FieldWriter<'a, MM2S_SA_SPEC, 32, O, u32>;
+pub type SrcAddrW<'a, REG> = crate::FieldWriter<'a, REG, 32, u32>;
 impl R {
     #[doc = "Bits 0:31 - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
     #[inline(always)]
-    pub fn src_addr(&self) -> SRC_ADDR_R {
-        SRC_ADDR_R::new(self.bits)
+    pub fn src_addr(&self) -> SrcAddrR {
+        SrcAddrR::new(self.bits)
     }
 }
 impl W {
     #[doc = "Bits 0:31 - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
     #[inline(always)]
     #[must_use]
-    pub fn src_addr(&mut self) -> SRC_ADDR_W<0> {
-        SRC_ADDR_W::new(self)
-    }
-    #[doc = "Writes raw bits to the register."]
-    #[inline(always)]
-    pub unsafe fn bits(&mut self, bits: u32) -> &mut Self {
-        self.0.bits(bits);
-        self
+    pub fn src_addr(&mut self) -> SrcAddrW<Mm2sSaSpec> {
+        SrcAddrW::new(self, 0)
     }
 }
-#[doc = "MM2S Source Address. Lower 32 bits of the address.\n\nThis register you can [`read`](crate::generic::Reg::read), [`write_with_zero`](crate::generic::Reg::write_with_zero), [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`modify`](crate::generic::Reg::modify). See [API](https://docs.rs/svd2rust/#read--modify--write-api).\n\nFor information about available fields see [mm2s_sa](index.html) module"]
-pub struct MM2S_SA_SPEC;
-impl crate::RegisterSpec for MM2S_SA_SPEC {
+#[doc = "MM2S Source Address. Lower 32 bits of the address.\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`mm2s_sa::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`mm2s_sa::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
+pub struct Mm2sSaSpec;
+impl crate::RegisterSpec for Mm2sSaSpec {
     type Ux = u32;
 }
-#[doc = "`read()` method returns [mm2s_sa::R](R) reader structure"]
-impl crate::Readable for MM2S_SA_SPEC {
-    type Reader = R;
-}
-#[doc = "`write(|w| ..)` method takes [mm2s_sa::W](W) writer structure"]
-impl crate::Writable for MM2S_SA_SPEC {
-    type Writer = W;
-    const ZERO_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
-    const ONE_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
+#[doc = "`read()` method returns [`mm2s_sa::R`](R) reader structure"]
+impl crate::Readable for Mm2sSaSpec {}
+#[doc = "`write(|w| ..)` method takes [`mm2s_sa::W`](W) writer structure"]
+impl crate::Writable for Mm2sSaSpec {
+    type Safety = crate::Unsafe;
+    const ZERO_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
+    const ONE_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
 }
 #[doc = "`reset()` method sets mm2s_sa to value 0"]
-impl crate::Resettable for MM2S_SA_SPEC {
-    const RESET_VALUE: Self::Ux = 0;
+impl crate::Resettable for Mm2sSaSpec {
+    const RESET_VALUE: u32 = 0;
 }

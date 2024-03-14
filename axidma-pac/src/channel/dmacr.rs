@@ -1,7 +1,7 @@
-#[doc = "Register `mm2s_dmacr` reader"]
-pub type R = crate::R<Mm2sDmacrSpec>;
-#[doc = "Register `mm2s_dmacr` writer"]
-pub type W = crate::W<Mm2sDmacrSpec>;
+#[doc = "Register `dmacr` reader"]
+pub type R = crate::R<DmacrSpec>;
+#[doc = "Register `dmacr` writer"]
+pub type W = crate::W<DmacrSpec>;
 #[doc = "Run / Stop control for controlling running and stopping of the DMA channel.\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RunStop {
@@ -163,55 +163,55 @@ where
 }
 #[doc = "When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum CyclicBufferDescriptor {
+pub enum CyclicEnable {
     #[doc = "0: `0`"]
     Disable = 0,
     #[doc = "1: `1`"]
     Enable = 1,
 }
-impl From<CyclicBufferDescriptor> for bool {
+impl From<CyclicEnable> for bool {
     #[inline(always)]
-    fn from(variant: CyclicBufferDescriptor) -> Self {
+    fn from(variant: CyclicEnable) -> Self {
         variant as u8 != 0
     }
 }
-#[doc = "Field `cyclic_buffer_descriptor` reader - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
-pub type CyclicBufferDescriptorR = crate::BitReader<CyclicBufferDescriptor>;
-impl CyclicBufferDescriptorR {
+#[doc = "Field `cyclic_enable` reader - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
+pub type CyclicEnableR = crate::BitReader<CyclicEnable>;
+impl CyclicEnableR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub const fn variant(&self) -> CyclicBufferDescriptor {
+    pub const fn variant(&self) -> CyclicEnable {
         match self.bits {
-            false => CyclicBufferDescriptor::Disable,
-            true => CyclicBufferDescriptor::Enable,
+            false => CyclicEnable::Disable,
+            true => CyclicEnable::Enable,
         }
     }
     #[doc = "`0`"]
     #[inline(always)]
     pub fn is_disable(&self) -> bool {
-        *self == CyclicBufferDescriptor::Disable
+        *self == CyclicEnable::Disable
     }
     #[doc = "`1`"]
     #[inline(always)]
     pub fn is_enable(&self) -> bool {
-        *self == CyclicBufferDescriptor::Enable
+        *self == CyclicEnable::Enable
     }
 }
-#[doc = "Field `cyclic_buffer_descriptor` writer - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
-pub type CyclicBufferDescriptorW<'a, REG> = crate::BitWriter<'a, REG, CyclicBufferDescriptor>;
-impl<'a, REG> CyclicBufferDescriptorW<'a, REG>
+#[doc = "Field `cyclic_enable` writer - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
+pub type CyclicEnableW<'a, REG> = crate::BitWriter<'a, REG, CyclicEnable>;
+impl<'a, REG> CyclicEnableW<'a, REG>
 where
     REG: crate::Writable + crate::RegisterSpec,
 {
     #[doc = "`0`"]
     #[inline(always)]
     pub fn disable(self) -> &'a mut crate::W<REG> {
-        self.variant(CyclicBufferDescriptor::Disable)
+        self.variant(CyclicEnable::Disable)
     }
     #[doc = "`1`"]
     #[inline(always)]
     pub fn enable(self) -> &'a mut crate::W<REG> {
-        self.variant(CyclicBufferDescriptor::Enable)
+        self.variant(CyclicEnable::Enable)
     }
 }
 #[doc = "Interrupt on Complete (IOC) Interrupt Enable\n\nValue on reset: 0"]
@@ -399,8 +399,8 @@ impl R {
     }
     #[doc = "Bit 4 - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
     #[inline(always)]
-    pub fn cyclic_buffer_descriptor(&self) -> CyclicBufferDescriptorR {
-        CyclicBufferDescriptorR::new(((self.bits >> 4) & 1) != 0)
+    pub fn cyclic_enable(&self) -> CyclicEnableR {
+        CyclicEnableR::new(((self.bits >> 4) & 1) != 0)
     }
     #[doc = "Bit 12 - Interrupt on Complete (IOC) Interrupt Enable"]
     #[inline(always)]
@@ -432,72 +432,72 @@ impl W {
     #[doc = "Bit 0 - Run / Stop control for controlling running and stopping of the DMA channel."]
     #[inline(always)]
     #[must_use]
-    pub fn run_stop(&mut self) -> RunStopW<Mm2sDmacrSpec> {
+    pub fn run_stop(&mut self) -> RunStopW<DmacrSpec> {
         RunStopW::new(self, 0)
     }
     #[doc = "Bit 2 - Soft reset for resetting the AXI DMA core"]
     #[inline(always)]
     #[must_use]
-    pub fn reset(&mut self) -> ResetW<Mm2sDmacrSpec> {
+    pub fn reset(&mut self) -> ResetW<DmacrSpec> {
         ResetW::new(self, 2)
     }
     #[doc = "Bit 3 - Keyhole Read"]
     #[inline(always)]
     #[must_use]
-    pub fn keyhole(&mut self) -> KeyholeW<Mm2sDmacrSpec> {
+    pub fn keyhole(&mut self) -> KeyholeW<DmacrSpec> {
         KeyholeW::new(self, 3)
     }
     #[doc = "Bit 4 - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
     #[inline(always)]
     #[must_use]
-    pub fn cyclic_buffer_descriptor(&mut self) -> CyclicBufferDescriptorW<Mm2sDmacrSpec> {
-        CyclicBufferDescriptorW::new(self, 4)
+    pub fn cyclic_enable(&mut self) -> CyclicEnableW<DmacrSpec> {
+        CyclicEnableW::new(self, 4)
     }
     #[doc = "Bit 12 - Interrupt on Complete (IOC) Interrupt Enable"]
     #[inline(always)]
     #[must_use]
-    pub fn ioc_irq_en(&mut self) -> IocIrqEnW<Mm2sDmacrSpec> {
+    pub fn ioc_irq_en(&mut self) -> IocIrqEnW<DmacrSpec> {
         IocIrqEnW::new(self, 12)
     }
     #[doc = "Bit 13 - Interrupt on Delay Timer Interrupt Enable"]
     #[inline(always)]
     #[must_use]
-    pub fn dly_irq_en(&mut self) -> DlyIrqEnW<Mm2sDmacrSpec> {
+    pub fn dly_irq_en(&mut self) -> DlyIrqEnW<DmacrSpec> {
         DlyIrqEnW::new(self, 13)
     }
     #[doc = "Bit 14 - Interrupt on Error Interrupt Enable"]
     #[inline(always)]
     #[must_use]
-    pub fn err_irq_en(&mut self) -> ErrIrqEnW<Mm2sDmacrSpec> {
+    pub fn err_irq_en(&mut self) -> ErrIrqEnW<DmacrSpec> {
         ErrIrqEnW::new(self, 14)
     }
     #[doc = "Bits 16:23 - Interrupt Threshold"]
     #[inline(always)]
     #[must_use]
-    pub fn irq_threshold(&mut self) -> IrqThresholdW<Mm2sDmacrSpec> {
+    pub fn irq_threshold(&mut self) -> IrqThresholdW<DmacrSpec> {
         IrqThresholdW::new(self, 16)
     }
     #[doc = "Bits 24:31 - Interrupt Delay Time Out"]
     #[inline(always)]
     #[must_use]
-    pub fn irq_delay(&mut self) -> IrqDelayW<Mm2sDmacrSpec> {
+    pub fn irq_delay(&mut self) -> IrqDelayW<DmacrSpec> {
         IrqDelayW::new(self, 24)
     }
 }
-#[doc = "MM2S DMA Control register\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`mm2s_dmacr::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`mm2s_dmacr::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
-pub struct Mm2sDmacrSpec;
-impl crate::RegisterSpec for Mm2sDmacrSpec {
+#[doc = "DMA Channel Control register\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`dmacr::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`dmacr::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
+pub struct DmacrSpec;
+impl crate::RegisterSpec for DmacrSpec {
     type Ux = u32;
 }
-#[doc = "`read()` method returns [`mm2s_dmacr::R`](R) reader structure"]
-impl crate::Readable for Mm2sDmacrSpec {}
-#[doc = "`write(|w| ..)` method takes [`mm2s_dmacr::W`](W) writer structure"]
-impl crate::Writable for Mm2sDmacrSpec {
+#[doc = "`read()` method returns [`dmacr::R`](R) reader structure"]
+impl crate::Readable for DmacrSpec {}
+#[doc = "`write(|w| ..)` method takes [`dmacr::W`](W) writer structure"]
+impl crate::Writable for DmacrSpec {
     type Safety = crate::Unsafe;
     const ZERO_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
     const ONE_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
 }
-#[doc = "`reset()` method sets mm2s_dmacr to value 0"]
-impl crate::Resettable for Mm2sDmacrSpec {
+#[doc = "`reset()` method sets dmacr to value 0"]
+impl crate::Resettable for DmacrSpec {
     const RESET_VALUE: u32 = 0;
 }

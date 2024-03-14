@@ -1,7 +1,7 @@
-#[doc = "Register `mm2s_dmasr` reader"]
-pub type R = crate::R<Mm2sDmasrSpec>;
-#[doc = "Register `mm2s_dmasr` writer"]
-pub type W = crate::W<Mm2sDmasrSpec>;
+#[doc = "Register `dmasr` reader"]
+pub type R = crate::R<DmasrSpec>;
+#[doc = "Register `dmasr` writer"]
+pub type W = crate::W<DmasrSpec>;
 #[doc = "DMA Channel Halted. Indicates the run/stop state of the DMA channel.\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Halted {
@@ -722,102 +722,102 @@ impl W {
     #[doc = "Bit 0 - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
     #[inline(always)]
     #[must_use]
-    pub fn halted(&mut self) -> HaltedW<Mm2sDmasrSpec> {
+    pub fn halted(&mut self) -> HaltedW<DmasrSpec> {
         HaltedW::new(self, 0)
     }
     #[doc = "Bit 1 - DMA Channel Idle. Indicates the state of AXI DMA operations."]
     #[inline(always)]
     #[must_use]
-    pub fn idle(&mut self) -> IdleW<Mm2sDmasrSpec> {
+    pub fn idle(&mut self) -> IdleW<DmasrSpec> {
         IdleW::new(self, 1)
     }
     #[doc = "Bit 3 - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_incld(&mut self) -> SgIncldW<Mm2sDmasrSpec> {
+    pub fn sg_incld(&mut self) -> SgIncldW<DmasrSpec> {
         SgIncldW::new(self, 3)
     }
     #[doc = "Bit 4 - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_int_err(&mut self) -> DmaIntErrW<Mm2sDmasrSpec> {
+    pub fn dma_int_err(&mut self) -> DmaIntErrW<DmasrSpec> {
         DmaIntErrW::new(self, 4)
     }
     #[doc = "Bit 5 - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_slv_err(&mut self) -> DmaSlvErrW<Mm2sDmasrSpec> {
+    pub fn dma_slv_err(&mut self) -> DmaSlvErrW<DmasrSpec> {
         DmaSlvErrW::new(self, 5)
     }
     #[doc = "Bit 6 - DMA Decode Error. This error occurs if the address request points to an invalid address."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_dec_err(&mut self) -> DmaDecErrW<Mm2sDmasrSpec> {
+    pub fn dma_dec_err(&mut self) -> DmaDecErrW<DmasrSpec> {
         DmaDecErrW::new(self, 6)
     }
     #[doc = "Bit 8 - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_int_err(&mut self) -> SgIntErrW<Mm2sDmasrSpec> {
+    pub fn sg_int_err(&mut self) -> SgIntErrW<DmasrSpec> {
         SgIntErrW::new(self, 8)
     }
     #[doc = "Bit 9 - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_slv_err(&mut self) -> SgSlvErrW<Mm2sDmasrSpec> {
+    pub fn sg_slv_err(&mut self) -> SgSlvErrW<DmasrSpec> {
         SgSlvErrW::new(self, 9)
     }
     #[doc = "Bit 10 - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_dec_err(&mut self) -> SgDecErrW<Mm2sDmasrSpec> {
+    pub fn sg_dec_err(&mut self) -> SgDecErrW<DmasrSpec> {
         SgDecErrW::new(self, 10)
     }
     #[doc = "Bit 12 - Interrupt on Complete (IOC)"]
     #[inline(always)]
     #[must_use]
-    pub fn ioc_irq(&mut self) -> IocIrqW<Mm2sDmasrSpec> {
+    pub fn ioc_irq(&mut self) -> IocIrqW<DmasrSpec> {
         IocIrqW::new(self, 12)
     }
     #[doc = "Bit 13 - Interrupt on Delay Timer"]
     #[inline(always)]
     #[must_use]
-    pub fn dly_irq(&mut self) -> DlyIrqW<Mm2sDmasrSpec> {
+    pub fn dly_irq(&mut self) -> DlyIrqW<DmasrSpec> {
         DlyIrqW::new(self, 13)
     }
     #[doc = "Bit 14 - Interrupt on Error"]
     #[inline(always)]
     #[must_use]
-    pub fn err_irq(&mut self) -> ErrIrqW<Mm2sDmasrSpec> {
+    pub fn err_irq(&mut self) -> ErrIrqW<DmasrSpec> {
         ErrIrqW::new(self, 14)
     }
     #[doc = "Bits 16:23 - Interrupt Threshold Status. Indicates current interrupt threshold value."]
     #[inline(always)]
     #[must_use]
-    pub fn irq_threshold_sts(&mut self) -> IrqThresholdStsW<Mm2sDmasrSpec> {
+    pub fn irq_threshold_sts(&mut self) -> IrqThresholdStsW<DmasrSpec> {
         IrqThresholdStsW::new(self, 16)
     }
     #[doc = "Bits 24:31 - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
     #[inline(always)]
     #[must_use]
-    pub fn irq_delay_sts(&mut self) -> IrqDelayStsW<Mm2sDmasrSpec> {
+    pub fn irq_delay_sts(&mut self) -> IrqDelayStsW<DmasrSpec> {
         IrqDelayStsW::new(self, 24)
     }
 }
-#[doc = "MM2S DMA Status register\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`mm2s_dmasr::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`mm2s_dmasr::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
-pub struct Mm2sDmasrSpec;
-impl crate::RegisterSpec for Mm2sDmasrSpec {
+#[doc = "DMA Channel Status register\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`dmasr::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`dmasr::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
+pub struct DmasrSpec;
+impl crate::RegisterSpec for DmasrSpec {
     type Ux = u32;
 }
-#[doc = "`read()` method returns [`mm2s_dmasr::R`](R) reader structure"]
-impl crate::Readable for Mm2sDmasrSpec {}
-#[doc = "`write(|w| ..)` method takes [`mm2s_dmasr::W`](W) writer structure"]
-impl crate::Writable for Mm2sDmasrSpec {
+#[doc = "`read()` method returns [`dmasr::R`](R) reader structure"]
+impl crate::Readable for DmasrSpec {}
+#[doc = "`write(|w| ..)` method takes [`dmasr::W`](W) writer structure"]
+impl crate::Writable for DmasrSpec {
     type Safety = crate::Unsafe;
     const ZERO_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
     const ONE_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
 }
-#[doc = "`reset()` method sets mm2s_dmasr to value 0"]
-impl crate::Resettable for Mm2sDmasrSpec {
+#[doc = "`reset()` method sets dmasr to value 0"]
+impl crate::Resettable for DmasrSpec {
     const RESET_VALUE: u32 = 0;
 }

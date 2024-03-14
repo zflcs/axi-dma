@@ -1,827 +1,823 @@
 #[doc = "Register `s2mm_dmasr` reader"]
-pub struct R(crate::R<S2MM_DMASR_SPEC>);
-impl core::ops::Deref for R {
-    type Target = crate::R<S2MM_DMASR_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl From<crate::R<S2MM_DMASR_SPEC>> for R {
-    #[inline(always)]
-    fn from(reader: crate::R<S2MM_DMASR_SPEC>) -> Self {
-        R(reader)
-    }
-}
+pub type R = crate::R<S2mmDmasrSpec>;
 #[doc = "Register `s2mm_dmasr` writer"]
-pub struct W(crate::W<S2MM_DMASR_SPEC>);
-impl core::ops::Deref for W {
-    type Target = crate::W<S2MM_DMASR_SPEC>;
-    #[inline(always)]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
+pub type W = crate::W<S2mmDmasrSpec>;
+#[doc = "DMA Channel Halted. Indicates the run/stop state of the DMA channel.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Halted {
+    #[doc = "0: `0`"]
+    Running = 0,
+    #[doc = "1: `1`"]
+    Halted = 1,
 }
-impl core::ops::DerefMut for W {
+impl From<Halted> for bool {
     #[inline(always)]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-impl From<crate::W<S2MM_DMASR_SPEC>> for W {
-    #[inline(always)]
-    fn from(writer: crate::W<S2MM_DMASR_SPEC>) -> Self {
-        W(writer)
+    fn from(variant: Halted) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `halted` reader - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
-pub type HALTED_R = crate::BitReader<HALTED_A>;
-#[doc = "DMA Channel Halted. Indicates the run/stop state of the DMA channel.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum HALTED_A {
-    #[doc = "0: `0`"]
-    RUNNING = 0,
-    #[doc = "1: `1`"]
-    HALTED = 1,
-}
-impl From<HALTED_A> for bool {
-    #[inline(always)]
-    fn from(variant: HALTED_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl HALTED_R {
+pub type HaltedR = crate::BitReader<Halted>;
+impl HaltedR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> HALTED_A {
+    pub const fn variant(&self) -> Halted {
         match self.bits {
-            false => HALTED_A::RUNNING,
-            true => HALTED_A::HALTED,
+            false => Halted::Running,
+            true => Halted::Halted,
         }
     }
-    #[doc = "Checks if the value of the field is `RUNNING`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_running(&self) -> bool {
-        *self == HALTED_A::RUNNING
+        *self == Halted::Running
     }
-    #[doc = "Checks if the value of the field is `HALTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_halted(&self) -> bool {
-        *self == HALTED_A::HALTED
+        *self == Halted::Halted
     }
 }
 #[doc = "Field `halted` writer - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
-pub type HALTED_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, HALTED_A>;
-impl<'a, const O: u8> HALTED_W<'a, O> {
+pub type HaltedW<'a, REG> = crate::BitWriter<'a, REG, Halted>;
+impl<'a, REG> HaltedW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn running(self) -> &'a mut W {
-        self.variant(HALTED_A::RUNNING)
+    pub fn running(self) -> &'a mut crate::W<REG> {
+        self.variant(Halted::Running)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn halted(self) -> &'a mut W {
-        self.variant(HALTED_A::HALTED)
+    pub fn halted(self) -> &'a mut crate::W<REG> {
+        self.variant(Halted::Halted)
+    }
+}
+#[doc = "DMA Channel Idle. Indicates the state of AXI DMA operations.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Idle {
+    #[doc = "0: `0`"]
+    NotIdle = 0,
+    #[doc = "1: `1`"]
+    Idle = 1,
+}
+impl From<Idle> for bool {
+    #[inline(always)]
+    fn from(variant: Idle) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `idle` reader - DMA Channel Idle. Indicates the state of AXI DMA operations."]
-pub type IDLE_R = crate::BitReader<IDLE_A>;
-#[doc = "DMA Channel Idle. Indicates the state of AXI DMA operations.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum IDLE_A {
-    #[doc = "0: `0`"]
-    NOT_IDLE = 0,
-    #[doc = "1: `1`"]
-    IDLE = 1,
-}
-impl From<IDLE_A> for bool {
-    #[inline(always)]
-    fn from(variant: IDLE_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl IDLE_R {
+pub type IdleR = crate::BitReader<Idle>;
+impl IdleR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> IDLE_A {
+    pub const fn variant(&self) -> Idle {
         match self.bits {
-            false => IDLE_A::NOT_IDLE,
-            true => IDLE_A::IDLE,
+            false => Idle::NotIdle,
+            true => Idle::Idle,
         }
     }
-    #[doc = "Checks if the value of the field is `NOT_IDLE`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_not_idle(&self) -> bool {
-        *self == IDLE_A::NOT_IDLE
+        *self == Idle::NotIdle
     }
-    #[doc = "Checks if the value of the field is `IDLE`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_idle(&self) -> bool {
-        *self == IDLE_A::IDLE
+        *self == Idle::Idle
     }
 }
 #[doc = "Field `idle` writer - DMA Channel Idle. Indicates the state of AXI DMA operations."]
-pub type IDLE_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, IDLE_A>;
-impl<'a, const O: u8> IDLE_W<'a, O> {
+pub type IdleW<'a, REG> = crate::BitWriter<'a, REG, Idle>;
+impl<'a, REG> IdleW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn not_idle(self) -> &'a mut W {
-        self.variant(IDLE_A::NOT_IDLE)
+    pub fn not_idle(self) -> &'a mut crate::W<REG> {
+        self.variant(Idle::NotIdle)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn idle(self) -> &'a mut W {
-        self.variant(IDLE_A::IDLE)
+    pub fn idle(self) -> &'a mut crate::W<REG> {
+        self.variant(Idle::Idle)
+    }
+}
+#[doc = "Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SgIncld {
+    #[doc = "0: `0`"]
+    SgDisabled = 0,
+    #[doc = "1: `1`"]
+    SgEnabled = 1,
+}
+impl From<SgIncld> for bool {
+    #[inline(always)]
+    fn from(variant: SgIncld) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `sg_incld` reader - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
-pub type SG_INCLD_R = crate::BitReader<SG_INCLD_A>;
-#[doc = "Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SG_INCLD_A {
-    #[doc = "0: `0`"]
-    SG_DISABLED = 0,
-    #[doc = "1: `1`"]
-    SG_ENABLED = 1,
-}
-impl From<SG_INCLD_A> for bool {
-    #[inline(always)]
-    fn from(variant: SG_INCLD_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl SG_INCLD_R {
+pub type SgIncldR = crate::BitReader<SgIncld>;
+impl SgIncldR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> SG_INCLD_A {
+    pub const fn variant(&self) -> SgIncld {
         match self.bits {
-            false => SG_INCLD_A::SG_DISABLED,
-            true => SG_INCLD_A::SG_ENABLED,
+            false => SgIncld::SgDisabled,
+            true => SgIncld::SgEnabled,
         }
     }
-    #[doc = "Checks if the value of the field is `SG_DISABLED`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_sg_disabled(&self) -> bool {
-        *self == SG_INCLD_A::SG_DISABLED
+        *self == SgIncld::SgDisabled
     }
-    #[doc = "Checks if the value of the field is `SG_ENABLED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_sg_enabled(&self) -> bool {
-        *self == SG_INCLD_A::SG_ENABLED
+        *self == SgIncld::SgEnabled
     }
 }
 #[doc = "Field `sg_incld` writer - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
-pub type SG_INCLD_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, SG_INCLD_A>;
-impl<'a, const O: u8> SG_INCLD_W<'a, O> {
+pub type SgIncldW<'a, REG> = crate::BitWriter<'a, REG, SgIncld>;
+impl<'a, REG> SgIncldW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn sg_disabled(self) -> &'a mut W {
-        self.variant(SG_INCLD_A::SG_DISABLED)
+    pub fn sg_disabled(self) -> &'a mut crate::W<REG> {
+        self.variant(SgIncld::SgDisabled)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn sg_enabled(self) -> &'a mut W {
-        self.variant(SG_INCLD_A::SG_ENABLED)
+    pub fn sg_enabled(self) -> &'a mut crate::W<REG> {
+        self.variant(SgIncld::SgEnabled)
+    }
+}
+#[doc = "DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DmaIntErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<DmaIntErr> for bool {
+    #[inline(always)]
+    fn from(variant: DmaIntErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `dma_int_err` reader - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
-pub type DMA_INT_ERR_R = crate::BitReader<DMA_INT_ERR_A>;
-#[doc = "DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DMA_INT_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<DMA_INT_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: DMA_INT_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl DMA_INT_ERR_R {
+pub type DmaIntErrR = crate::BitReader<DmaIntErr>;
+impl DmaIntErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> DMA_INT_ERR_A {
+    pub const fn variant(&self) -> DmaIntErr {
         match self.bits {
-            false => DMA_INT_ERR_A::NO_ERR,
-            true => DMA_INT_ERR_A::DETECTED,
+            false => DmaIntErr::NoErr,
+            true => DmaIntErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == DMA_INT_ERR_A::NO_ERR
+        *self == DmaIntErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == DMA_INT_ERR_A::DETECTED
+        *self == DmaIntErr::Detected
     }
 }
 #[doc = "Field `dma_int_err` writer - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
-pub type DMA_INT_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, DMA_INT_ERR_A>;
-impl<'a, const O: u8> DMA_INT_ERR_W<'a, O> {
+pub type DmaIntErrW<'a, REG> = crate::BitWriter<'a, REG, DmaIntErr>;
+impl<'a, REG> DmaIntErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(DMA_INT_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaIntErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(DMA_INT_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaIntErr::Detected)
+    }
+}
+#[doc = "DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DmaSlvErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<DmaSlvErr> for bool {
+    #[inline(always)]
+    fn from(variant: DmaSlvErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `dma_slv_err` reader - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
-pub type DMA_SLV_ERR_R = crate::BitReader<DMA_SLV_ERR_A>;
-#[doc = "DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DMA_SLV_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<DMA_SLV_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: DMA_SLV_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl DMA_SLV_ERR_R {
+pub type DmaSlvErrR = crate::BitReader<DmaSlvErr>;
+impl DmaSlvErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> DMA_SLV_ERR_A {
+    pub const fn variant(&self) -> DmaSlvErr {
         match self.bits {
-            false => DMA_SLV_ERR_A::NO_ERR,
-            true => DMA_SLV_ERR_A::DETECTED,
+            false => DmaSlvErr::NoErr,
+            true => DmaSlvErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == DMA_SLV_ERR_A::NO_ERR
+        *self == DmaSlvErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == DMA_SLV_ERR_A::DETECTED
+        *self == DmaSlvErr::Detected
     }
 }
 #[doc = "Field `dma_slv_err` writer - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
-pub type DMA_SLV_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, DMA_SLV_ERR_A>;
-impl<'a, const O: u8> DMA_SLV_ERR_W<'a, O> {
+pub type DmaSlvErrW<'a, REG> = crate::BitWriter<'a, REG, DmaSlvErr>;
+impl<'a, REG> DmaSlvErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(DMA_SLV_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaSlvErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(DMA_SLV_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaSlvErr::Detected)
+    }
+}
+#[doc = "DMA Decode Error. This error occurs if the address request points to an invalid address.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DmaDecErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<DmaDecErr> for bool {
+    #[inline(always)]
+    fn from(variant: DmaDecErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `dma_dec_err` reader - DMA Decode Error. This error occurs if the address request points to an invalid address."]
-pub type DMA_DEC_ERR_R = crate::BitReader<DMA_DEC_ERR_A>;
-#[doc = "DMA Decode Error. This error occurs if the address request points to an invalid address.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DMA_DEC_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<DMA_DEC_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: DMA_DEC_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl DMA_DEC_ERR_R {
+pub type DmaDecErrR = crate::BitReader<DmaDecErr>;
+impl DmaDecErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> DMA_DEC_ERR_A {
+    pub const fn variant(&self) -> DmaDecErr {
         match self.bits {
-            false => DMA_DEC_ERR_A::NO_ERR,
-            true => DMA_DEC_ERR_A::DETECTED,
+            false => DmaDecErr::NoErr,
+            true => DmaDecErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == DMA_DEC_ERR_A::NO_ERR
+        *self == DmaDecErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == DMA_DEC_ERR_A::DETECTED
+        *self == DmaDecErr::Detected
     }
 }
 #[doc = "Field `dma_dec_err` writer - DMA Decode Error. This error occurs if the address request points to an invalid address."]
-pub type DMA_DEC_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, DMA_DEC_ERR_A>;
-impl<'a, const O: u8> DMA_DEC_ERR_W<'a, O> {
+pub type DmaDecErrW<'a, REG> = crate::BitWriter<'a, REG, DmaDecErr>;
+impl<'a, REG> DmaDecErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(DMA_DEC_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaDecErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(DMA_DEC_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(DmaDecErr::Detected)
+    }
+}
+#[doc = "Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SgIntErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<SgIntErr> for bool {
+    #[inline(always)]
+    fn from(variant: SgIntErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `sg_int_err` reader - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
-pub type SG_INT_ERR_R = crate::BitReader<SG_INT_ERR_A>;
-#[doc = "Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SG_INT_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<SG_INT_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: SG_INT_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl SG_INT_ERR_R {
+pub type SgIntErrR = crate::BitReader<SgIntErr>;
+impl SgIntErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> SG_INT_ERR_A {
+    pub const fn variant(&self) -> SgIntErr {
         match self.bits {
-            false => SG_INT_ERR_A::NO_ERR,
-            true => SG_INT_ERR_A::DETECTED,
+            false => SgIntErr::NoErr,
+            true => SgIntErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == SG_INT_ERR_A::NO_ERR
+        *self == SgIntErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == SG_INT_ERR_A::DETECTED
+        *self == SgIntErr::Detected
     }
 }
 #[doc = "Field `sg_int_err` writer - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
-pub type SG_INT_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, SG_INT_ERR_A>;
-impl<'a, const O: u8> SG_INT_ERR_W<'a, O> {
+pub type SgIntErrW<'a, REG> = crate::BitWriter<'a, REG, SgIntErr>;
+impl<'a, REG> SgIntErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(SG_INT_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(SgIntErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(SG_INT_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(SgIntErr::Detected)
+    }
+}
+#[doc = "Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SgSlvErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<SgSlvErr> for bool {
+    #[inline(always)]
+    fn from(variant: SgSlvErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `sg_slv_err` reader - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
-pub type SG_SLV_ERR_R = crate::BitReader<SG_SLV_ERR_A>;
-#[doc = "Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SG_SLV_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<SG_SLV_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: SG_SLV_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl SG_SLV_ERR_R {
+pub type SgSlvErrR = crate::BitReader<SgSlvErr>;
+impl SgSlvErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> SG_SLV_ERR_A {
+    pub const fn variant(&self) -> SgSlvErr {
         match self.bits {
-            false => SG_SLV_ERR_A::NO_ERR,
-            true => SG_SLV_ERR_A::DETECTED,
+            false => SgSlvErr::NoErr,
+            true => SgSlvErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == SG_SLV_ERR_A::NO_ERR
+        *self == SgSlvErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == SG_SLV_ERR_A::DETECTED
+        *self == SgSlvErr::Detected
     }
 }
 #[doc = "Field `sg_slv_err` writer - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
-pub type SG_SLV_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, SG_SLV_ERR_A>;
-impl<'a, const O: u8> SG_SLV_ERR_W<'a, O> {
+pub type SgSlvErrW<'a, REG> = crate::BitWriter<'a, REG, SgSlvErr>;
+impl<'a, REG> SgSlvErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(SG_SLV_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(SgSlvErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(SG_SLV_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(SgSlvErr::Detected)
+    }
+}
+#[doc = "Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address.\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SgDecErr {
+    #[doc = "0: `0`"]
+    NoErr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<SgDecErr> for bool {
+    #[inline(always)]
+    fn from(variant: SgDecErr) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `sg_dec_err` reader - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
-pub type SG_DEC_ERR_R = crate::BitReader<SG_DEC_ERR_A>;
-#[doc = "Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address.\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SG_DEC_ERR_A {
-    #[doc = "0: `0`"]
-    NO_ERR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<SG_DEC_ERR_A> for bool {
-    #[inline(always)]
-    fn from(variant: SG_DEC_ERR_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl SG_DEC_ERR_R {
+pub type SgDecErrR = crate::BitReader<SgDecErr>;
+impl SgDecErrR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> SG_DEC_ERR_A {
+    pub const fn variant(&self) -> SgDecErr {
         match self.bits {
-            false => SG_DEC_ERR_A::NO_ERR,
-            true => SG_DEC_ERR_A::DETECTED,
+            false => SgDecErr::NoErr,
+            true => SgDecErr::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_ERR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_err(&self) -> bool {
-        *self == SG_DEC_ERR_A::NO_ERR
+        *self == SgDecErr::NoErr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == SG_DEC_ERR_A::DETECTED
+        *self == SgDecErr::Detected
     }
 }
 #[doc = "Field `sg_dec_err` writer - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
-pub type SG_DEC_ERR_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, SG_DEC_ERR_A>;
-impl<'a, const O: u8> SG_DEC_ERR_W<'a, O> {
+pub type SgDecErrW<'a, REG> = crate::BitWriter<'a, REG, SgDecErr>;
+impl<'a, REG> SgDecErrW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_err(self) -> &'a mut W {
-        self.variant(SG_DEC_ERR_A::NO_ERR)
+    pub fn no_err(self) -> &'a mut crate::W<REG> {
+        self.variant(SgDecErr::NoErr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(SG_DEC_ERR_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(SgDecErr::Detected)
+    }
+}
+#[doc = "Interrupt on Complete (IOC)\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum IocIrq {
+    #[doc = "0: `0`"]
+    NoIntr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<IocIrq> for bool {
+    #[inline(always)]
+    fn from(variant: IocIrq) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `ioc_irq` reader - Interrupt on Complete (IOC)"]
-pub type IOC_IRQ_R = crate::BitReader<IOC_IRQ_A>;
-#[doc = "Interrupt on Complete (IOC)\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum IOC_IRQ_A {
-    #[doc = "0: `0`"]
-    NO_INTR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<IOC_IRQ_A> for bool {
-    #[inline(always)]
-    fn from(variant: IOC_IRQ_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl IOC_IRQ_R {
+pub type IocIrqR = crate::BitReader<IocIrq>;
+impl IocIrqR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> IOC_IRQ_A {
+    pub const fn variant(&self) -> IocIrq {
         match self.bits {
-            false => IOC_IRQ_A::NO_INTR,
-            true => IOC_IRQ_A::DETECTED,
+            false => IocIrq::NoIntr,
+            true => IocIrq::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_INTR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_intr(&self) -> bool {
-        *self == IOC_IRQ_A::NO_INTR
+        *self == IocIrq::NoIntr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == IOC_IRQ_A::DETECTED
+        *self == IocIrq::Detected
     }
 }
 #[doc = "Field `ioc_irq` writer - Interrupt on Complete (IOC)"]
-pub type IOC_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, IOC_IRQ_A>;
-impl<'a, const O: u8> IOC_IRQ_W<'a, O> {
+pub type IocIrqW<'a, REG> = crate::BitWriter<'a, REG, IocIrq>;
+impl<'a, REG> IocIrqW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_intr(self) -> &'a mut W {
-        self.variant(IOC_IRQ_A::NO_INTR)
+    pub fn no_intr(self) -> &'a mut crate::W<REG> {
+        self.variant(IocIrq::NoIntr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(IOC_IRQ_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(IocIrq::Detected)
+    }
+}
+#[doc = "Interrupt on Delay Timer\n\nValue on reset: 0"]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DlyIrq {
+    #[doc = "0: `0`"]
+    NoIntr = 0,
+    #[doc = "1: `1`"]
+    Detected = 1,
+}
+impl From<DlyIrq> for bool {
+    #[inline(always)]
+    fn from(variant: DlyIrq) -> Self {
+        variant as u8 != 0
     }
 }
 #[doc = "Field `dly_irq` reader - Interrupt on Delay Timer"]
-pub type DLY_IRQ_R = crate::BitReader<DLY_IRQ_A>;
-#[doc = "Interrupt on Delay Timer\n\nValue on reset: 0"]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DLY_IRQ_A {
-    #[doc = "0: `0`"]
-    NO_INTR = 0,
-    #[doc = "1: `1`"]
-    DETECTED = 1,
-}
-impl From<DLY_IRQ_A> for bool {
-    #[inline(always)]
-    fn from(variant: DLY_IRQ_A) -> Self {
-        variant as u8 != 0
-    }
-}
-impl DLY_IRQ_R {
+pub type DlyIrqR = crate::BitReader<DlyIrq>;
+impl DlyIrqR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> DLY_IRQ_A {
+    pub const fn variant(&self) -> DlyIrq {
         match self.bits {
-            false => DLY_IRQ_A::NO_INTR,
-            true => DLY_IRQ_A::DETECTED,
+            false => DlyIrq::NoIntr,
+            true => DlyIrq::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_INTR`"]
+    #[doc = "`0`"]
     #[inline(always)]
     pub fn is_no_intr(&self) -> bool {
-        *self == DLY_IRQ_A::NO_INTR
+        *self == DlyIrq::NoIntr
     }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
+    #[doc = "`1`"]
     #[inline(always)]
     pub fn is_detected(&self) -> bool {
-        *self == DLY_IRQ_A::DETECTED
+        *self == DlyIrq::Detected
     }
 }
 #[doc = "Field `dly_irq` writer - Interrupt on Delay Timer"]
-pub type DLY_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, DLY_IRQ_A>;
-impl<'a, const O: u8> DLY_IRQ_W<'a, O> {
+pub type DlyIrqW<'a, REG> = crate::BitWriter<'a, REG, DlyIrq>;
+impl<'a, REG> DlyIrqW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_intr(self) -> &'a mut W {
-        self.variant(DLY_IRQ_A::NO_INTR)
+    pub fn no_intr(self) -> &'a mut crate::W<REG> {
+        self.variant(DlyIrq::NoIntr)
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(DLY_IRQ_A::DETECTED)
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(DlyIrq::Detected)
     }
 }
-#[doc = "Field `err_irq` reader - Interrupt on Error"]
-pub type ERR_IRQ_R = crate::BitReader<ERR_IRQ_A>;
 #[doc = "Interrupt on Error\n\nValue on reset: 0"]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum ERR_IRQ_A {
+pub enum ErrIrq {
     #[doc = "0: `0`"]
-    NO_INTR = 0,
+    NoIntr = 0,
     #[doc = "1: `1`"]
-    DETECTED = 1,
+    Detected = 1,
 }
-impl From<ERR_IRQ_A> for bool {
+impl From<ErrIrq> for bool {
     #[inline(always)]
-    fn from(variant: ERR_IRQ_A) -> Self {
+    fn from(variant: ErrIrq) -> Self {
         variant as u8 != 0
     }
 }
-impl ERR_IRQ_R {
+#[doc = "Field `err_irq` reader - Interrupt on Error"]
+pub type ErrIrqR = crate::BitReader<ErrIrq>;
+impl ErrIrqR {
     #[doc = "Get enumerated values variant"]
     #[inline(always)]
-    pub fn variant(&self) -> ERR_IRQ_A {
+    pub const fn variant(&self) -> ErrIrq {
         match self.bits {
-            false => ERR_IRQ_A::NO_INTR,
-            true => ERR_IRQ_A::DETECTED,
+            false => ErrIrq::NoIntr,
+            true => ErrIrq::Detected,
         }
     }
-    #[doc = "Checks if the value of the field is `NO_INTR`"]
-    #[inline(always)]
-    pub fn is_no_intr(&self) -> bool {
-        *self == ERR_IRQ_A::NO_INTR
-    }
-    #[doc = "Checks if the value of the field is `DETECTED`"]
-    #[inline(always)]
-    pub fn is_detected(&self) -> bool {
-        *self == ERR_IRQ_A::DETECTED
-    }
-}
-#[doc = "Field `err_irq` writer - Interrupt on Error"]
-pub type ERR_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMASR_SPEC, O, ERR_IRQ_A>;
-impl<'a, const O: u8> ERR_IRQ_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
-    pub fn no_intr(self) -> &'a mut W {
-        self.variant(ERR_IRQ_A::NO_INTR)
+    pub fn is_no_intr(&self) -> bool {
+        *self == ErrIrq::NoIntr
     }
     #[doc = "`1`"]
     #[inline(always)]
-    pub fn detected(self) -> &'a mut W {
-        self.variant(ERR_IRQ_A::DETECTED)
+    pub fn is_detected(&self) -> bool {
+        *self == ErrIrq::Detected
+    }
+}
+#[doc = "Field `err_irq` writer - Interrupt on Error"]
+pub type ErrIrqW<'a, REG> = crate::BitWriter<'a, REG, ErrIrq>;
+impl<'a, REG> ErrIrqW<'a, REG>
+where
+    REG: crate::Writable + crate::RegisterSpec,
+{
+    #[doc = "`0`"]
+    #[inline(always)]
+    pub fn no_intr(self) -> &'a mut crate::W<REG> {
+        self.variant(ErrIrq::NoIntr)
+    }
+    #[doc = "`1`"]
+    #[inline(always)]
+    pub fn detected(self) -> &'a mut crate::W<REG> {
+        self.variant(ErrIrq::Detected)
     }
 }
 #[doc = "Field `irq_threshold_sts` reader - Interrupt Threshold Status. Indicates current interrupt threshold value."]
-pub type IRQ_THRESHOLD_STS_R = crate::FieldReader;
+pub type IrqThresholdStsR = crate::FieldReader;
 #[doc = "Field `irq_threshold_sts` writer - Interrupt Threshold Status. Indicates current interrupt threshold value."]
-pub type IRQ_THRESHOLD_STS_W<'a, const O: u8> = crate::FieldWriter<'a, S2MM_DMASR_SPEC, 8, O>;
+pub type IrqThresholdStsW<'a, REG> = crate::FieldWriter<'a, REG, 8>;
 #[doc = "Field `irq_delay_sts` reader - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
-pub type IRQ_DELAY_STS_R = crate::FieldReader;
+pub type IrqDelayStsR = crate::FieldReader;
 #[doc = "Field `irq_delay_sts` writer - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
-pub type IRQ_DELAY_STS_W<'a, const O: u8> = crate::FieldWriter<'a, S2MM_DMASR_SPEC, 8, O>;
+pub type IrqDelayStsW<'a, REG> = crate::FieldWriter<'a, REG, 8>;
 impl R {
     #[doc = "Bit 0 - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
     #[inline(always)]
-    pub fn halted(&self) -> HALTED_R {
-        HALTED_R::new((self.bits & 1) != 0)
+    pub fn halted(&self) -> HaltedR {
+        HaltedR::new((self.bits & 1) != 0)
     }
     #[doc = "Bit 1 - DMA Channel Idle. Indicates the state of AXI DMA operations."]
     #[inline(always)]
-    pub fn idle(&self) -> IDLE_R {
-        IDLE_R::new(((self.bits >> 1) & 1) != 0)
+    pub fn idle(&self) -> IdleR {
+        IdleR::new(((self.bits >> 1) & 1) != 0)
     }
     #[doc = "Bit 3 - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
     #[inline(always)]
-    pub fn sg_incld(&self) -> SG_INCLD_R {
-        SG_INCLD_R::new(((self.bits >> 3) & 1) != 0)
+    pub fn sg_incld(&self) -> SgIncldR {
+        SgIncldR::new(((self.bits >> 3) & 1) != 0)
     }
     #[doc = "Bit 4 - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
     #[inline(always)]
-    pub fn dma_int_err(&self) -> DMA_INT_ERR_R {
-        DMA_INT_ERR_R::new(((self.bits >> 4) & 1) != 0)
+    pub fn dma_int_err(&self) -> DmaIntErrR {
+        DmaIntErrR::new(((self.bits >> 4) & 1) != 0)
     }
     #[doc = "Bit 5 - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
     #[inline(always)]
-    pub fn dma_slv_err(&self) -> DMA_SLV_ERR_R {
-        DMA_SLV_ERR_R::new(((self.bits >> 5) & 1) != 0)
+    pub fn dma_slv_err(&self) -> DmaSlvErrR {
+        DmaSlvErrR::new(((self.bits >> 5) & 1) != 0)
     }
     #[doc = "Bit 6 - DMA Decode Error. This error occurs if the address request points to an invalid address."]
     #[inline(always)]
-    pub fn dma_dec_err(&self) -> DMA_DEC_ERR_R {
-        DMA_DEC_ERR_R::new(((self.bits >> 6) & 1) != 0)
+    pub fn dma_dec_err(&self) -> DmaDecErrR {
+        DmaDecErrR::new(((self.bits >> 6) & 1) != 0)
     }
     #[doc = "Bit 8 - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
     #[inline(always)]
-    pub fn sg_int_err(&self) -> SG_INT_ERR_R {
-        SG_INT_ERR_R::new(((self.bits >> 8) & 1) != 0)
+    pub fn sg_int_err(&self) -> SgIntErrR {
+        SgIntErrR::new(((self.bits >> 8) & 1) != 0)
     }
     #[doc = "Bit 9 - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
     #[inline(always)]
-    pub fn sg_slv_err(&self) -> SG_SLV_ERR_R {
-        SG_SLV_ERR_R::new(((self.bits >> 9) & 1) != 0)
+    pub fn sg_slv_err(&self) -> SgSlvErrR {
+        SgSlvErrR::new(((self.bits >> 9) & 1) != 0)
     }
     #[doc = "Bit 10 - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
     #[inline(always)]
-    pub fn sg_dec_err(&self) -> SG_DEC_ERR_R {
-        SG_DEC_ERR_R::new(((self.bits >> 10) & 1) != 0)
+    pub fn sg_dec_err(&self) -> SgDecErrR {
+        SgDecErrR::new(((self.bits >> 10) & 1) != 0)
     }
     #[doc = "Bit 12 - Interrupt on Complete (IOC)"]
     #[inline(always)]
-    pub fn ioc_irq(&self) -> IOC_IRQ_R {
-        IOC_IRQ_R::new(((self.bits >> 12) & 1) != 0)
+    pub fn ioc_irq(&self) -> IocIrqR {
+        IocIrqR::new(((self.bits >> 12) & 1) != 0)
     }
     #[doc = "Bit 13 - Interrupt on Delay Timer"]
     #[inline(always)]
-    pub fn dly_irq(&self) -> DLY_IRQ_R {
-        DLY_IRQ_R::new(((self.bits >> 13) & 1) != 0)
+    pub fn dly_irq(&self) -> DlyIrqR {
+        DlyIrqR::new(((self.bits >> 13) & 1) != 0)
     }
     #[doc = "Bit 14 - Interrupt on Error"]
     #[inline(always)]
-    pub fn err_irq(&self) -> ERR_IRQ_R {
-        ERR_IRQ_R::new(((self.bits >> 14) & 1) != 0)
+    pub fn err_irq(&self) -> ErrIrqR {
+        ErrIrqR::new(((self.bits >> 14) & 1) != 0)
     }
     #[doc = "Bits 16:23 - Interrupt Threshold Status. Indicates current interrupt threshold value."]
     #[inline(always)]
-    pub fn irq_threshold_sts(&self) -> IRQ_THRESHOLD_STS_R {
-        IRQ_THRESHOLD_STS_R::new(((self.bits >> 16) & 0xff) as u8)
+    pub fn irq_threshold_sts(&self) -> IrqThresholdStsR {
+        IrqThresholdStsR::new(((self.bits >> 16) & 0xff) as u8)
     }
     #[doc = "Bits 24:31 - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
     #[inline(always)]
-    pub fn irq_delay_sts(&self) -> IRQ_DELAY_STS_R {
-        IRQ_DELAY_STS_R::new(((self.bits >> 24) & 0xff) as u8)
+    pub fn irq_delay_sts(&self) -> IrqDelayStsR {
+        IrqDelayStsR::new(((self.bits >> 24) & 0xff) as u8)
     }
 }
 impl W {
     #[doc = "Bit 0 - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
     #[inline(always)]
     #[must_use]
-    pub fn halted(&mut self) -> HALTED_W<0> {
-        HALTED_W::new(self)
+    pub fn halted(&mut self) -> HaltedW<S2mmDmasrSpec> {
+        HaltedW::new(self, 0)
     }
     #[doc = "Bit 1 - DMA Channel Idle. Indicates the state of AXI DMA operations."]
     #[inline(always)]
     #[must_use]
-    pub fn idle(&mut self) -> IDLE_W<1> {
-        IDLE_W::new(self)
+    pub fn idle(&mut self) -> IdleW<S2mmDmasrSpec> {
+        IdleW::new(self, 1)
     }
     #[doc = "Bit 3 - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_incld(&mut self) -> SG_INCLD_W<3> {
-        SG_INCLD_W::new(self)
+    pub fn sg_incld(&mut self) -> SgIncldW<S2mmDmasrSpec> {
+        SgIncldW::new(self, 3)
     }
     #[doc = "Bit 4 - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_int_err(&mut self) -> DMA_INT_ERR_W<4> {
-        DMA_INT_ERR_W::new(self)
+    pub fn dma_int_err(&mut self) -> DmaIntErrW<S2mmDmasrSpec> {
+        DmaIntErrW::new(self, 4)
     }
     #[doc = "Bit 5 - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_slv_err(&mut self) -> DMA_SLV_ERR_W<5> {
-        DMA_SLV_ERR_W::new(self)
+    pub fn dma_slv_err(&mut self) -> DmaSlvErrW<S2mmDmasrSpec> {
+        DmaSlvErrW::new(self, 5)
     }
     #[doc = "Bit 6 - DMA Decode Error. This error occurs if the address request points to an invalid address."]
     #[inline(always)]
     #[must_use]
-    pub fn dma_dec_err(&mut self) -> DMA_DEC_ERR_W<6> {
-        DMA_DEC_ERR_W::new(self)
+    pub fn dma_dec_err(&mut self) -> DmaDecErrW<S2mmDmasrSpec> {
+        DmaDecErrW::new(self, 6)
     }
     #[doc = "Bit 8 - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_int_err(&mut self) -> SG_INT_ERR_W<8> {
-        SG_INT_ERR_W::new(self)
+    pub fn sg_int_err(&mut self) -> SgIntErrW<S2mmDmasrSpec> {
+        SgIntErrW::new(self, 8)
     }
     #[doc = "Bit 9 - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_slv_err(&mut self) -> SG_SLV_ERR_W<9> {
-        SG_SLV_ERR_W::new(self)
+    pub fn sg_slv_err(&mut self) -> SgSlvErrW<S2mmDmasrSpec> {
+        SgSlvErrW::new(self, 9)
     }
     #[doc = "Bit 10 - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
     #[inline(always)]
     #[must_use]
-    pub fn sg_dec_err(&mut self) -> SG_DEC_ERR_W<10> {
-        SG_DEC_ERR_W::new(self)
+    pub fn sg_dec_err(&mut self) -> SgDecErrW<S2mmDmasrSpec> {
+        SgDecErrW::new(self, 10)
     }
     #[doc = "Bit 12 - Interrupt on Complete (IOC)"]
     #[inline(always)]
     #[must_use]
-    pub fn ioc_irq(&mut self) -> IOC_IRQ_W<12> {
-        IOC_IRQ_W::new(self)
+    pub fn ioc_irq(&mut self) -> IocIrqW<S2mmDmasrSpec> {
+        IocIrqW::new(self, 12)
     }
     #[doc = "Bit 13 - Interrupt on Delay Timer"]
     #[inline(always)]
     #[must_use]
-    pub fn dly_irq(&mut self) -> DLY_IRQ_W<13> {
-        DLY_IRQ_W::new(self)
+    pub fn dly_irq(&mut self) -> DlyIrqW<S2mmDmasrSpec> {
+        DlyIrqW::new(self, 13)
     }
     #[doc = "Bit 14 - Interrupt on Error"]
     #[inline(always)]
     #[must_use]
-    pub fn err_irq(&mut self) -> ERR_IRQ_W<14> {
-        ERR_IRQ_W::new(self)
+    pub fn err_irq(&mut self) -> ErrIrqW<S2mmDmasrSpec> {
+        ErrIrqW::new(self, 14)
     }
     #[doc = "Bits 16:23 - Interrupt Threshold Status. Indicates current interrupt threshold value."]
     #[inline(always)]
     #[must_use]
-    pub fn irq_threshold_sts(&mut self) -> IRQ_THRESHOLD_STS_W<16> {
-        IRQ_THRESHOLD_STS_W::new(self)
+    pub fn irq_threshold_sts(&mut self) -> IrqThresholdStsW<S2mmDmasrSpec> {
+        IrqThresholdStsW::new(self, 16)
     }
     #[doc = "Bits 24:31 - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
     #[inline(always)]
     #[must_use]
-    pub fn irq_delay_sts(&mut self) -> IRQ_DELAY_STS_W<24> {
-        IRQ_DELAY_STS_W::new(self)
-    }
-    #[doc = "Writes raw bits to the register."]
-    #[inline(always)]
-    pub unsafe fn bits(&mut self, bits: u32) -> &mut Self {
-        self.0.bits(bits);
-        self
+    pub fn irq_delay_sts(&mut self) -> IrqDelayStsW<S2mmDmasrSpec> {
+        IrqDelayStsW::new(self, 24)
     }
 }
-#[doc = "S2MM DMA Status register\n\nThis register you can [`read`](crate::generic::Reg::read), [`write_with_zero`](crate::generic::Reg::write_with_zero), [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`modify`](crate::generic::Reg::modify). See [API](https://docs.rs/svd2rust/#read--modify--write-api).\n\nFor information about available fields see [s2mm_dmasr](index.html) module"]
-pub struct S2MM_DMASR_SPEC;
-impl crate::RegisterSpec for S2MM_DMASR_SPEC {
+#[doc = "S2MM DMA Status register\n\nYou can [`read`](crate::generic::Reg::read) this register and get [`s2mm_dmasr::R`](R).  You can [`reset`](crate::generic::Reg::reset), [`write`](crate::generic::Reg::write), [`write_with_zero`](crate::generic::Reg::write_with_zero) this register using [`s2mm_dmasr::W`](W). You can also [`modify`](crate::generic::Reg::modify) this register. See [API](https://docs.rs/svd2rust/#read--modify--write-api)."]
+pub struct S2mmDmasrSpec;
+impl crate::RegisterSpec for S2mmDmasrSpec {
     type Ux = u32;
 }
-#[doc = "`read()` method returns [s2mm_dmasr::R](R) reader structure"]
-impl crate::Readable for S2MM_DMASR_SPEC {
-    type Reader = R;
-}
-#[doc = "`write(|w| ..)` method takes [s2mm_dmasr::W](W) writer structure"]
-impl crate::Writable for S2MM_DMASR_SPEC {
-    type Writer = W;
-    const ZERO_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
-    const ONE_TO_MODIFY_FIELDS_BITMAP: Self::Ux = 0;
+#[doc = "`read()` method returns [`s2mm_dmasr::R`](R) reader structure"]
+impl crate::Readable for S2mmDmasrSpec {}
+#[doc = "`write(|w| ..)` method takes [`s2mm_dmasr::W`](W) writer structure"]
+impl crate::Writable for S2mmDmasrSpec {
+    type Safety = crate::Unsafe;
+    const ZERO_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
+    const ONE_TO_MODIFY_FIELDS_BITMAP: u32 = 0;
 }
 #[doc = "`reset()` method sets s2mm_dmasr to value 0"]
-impl crate::Resettable for S2MM_DMASR_SPEC {
-    const RESET_VALUE: Self::Ux = 0;
+impl crate::Resettable for S2mmDmasrSpec {
+    const RESET_VALUE: u32 = 0;
 }
