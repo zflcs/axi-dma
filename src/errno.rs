@@ -9,4 +9,6 @@ pub enum AxiDMAErr {
     BDRingNoList,
     /// The parameter is invalid
     InValidParam,
+    /// Interrupt on Error
+    IntrErr,
 }

@@ -262,8 +262,11 @@
 //! 
 
 #![no_std]
+#![feature(sync_unsafe_cell)]
+
 #[deny(missing_docs)]
 #[deny(unused)]
+
 extern crate alloc;
 
 mod bd;
@@ -273,14 +276,11 @@ mod transfer;
 mod hw;
 
 use core::{ops::Deref, pin::Pin, sync::atomic::AtomicBool};
-#[cfg(feature = "async")]
-use alloc::collections::VecDeque;
 use alloc::sync::Arc;
 use channel::AxiDMAChannel;
 use errno::AxiDMAErr;
 use hw::AXI_DMA_CONFIG;
-use spin::Mutex;
-use transfer::{RxTransfer, TxTransfer};
+use transfer::Transfer;
 use core::sync::atomic::Ordering;
 
 type AxiDMAResult = Result<(), AxiDMAErr>;
@@ -288,7 +288,9 @@ type AxiDMAResult = Result<(), AxiDMAErr>;
 /// The AxiDma driver instance structure. An instance must be allocated for each DMA
 /// engine in use.
 pub struct AxiDma {
+    // Immutable
     /// The base address of the AxiDMA
+    #[allow(unused)]
     base_address: usize,
     /// Has Scatter Gather mode
     #[allow(unused)]
@@ -304,16 +306,9 @@ pub struct AxiDma {
     /// Whether the AxiDMA is initialized
     is_initialized: AtomicBool,
     /// The tx channel
-    tx_channel: Option<Mutex<AxiDMAChannel>>,
+    pub tx_channel: Option<Arc<AxiDMAChannel>>,
     /// The rx channel
-    rx_channel: Option<Mutex<AxiDMAChannel>>,
-
-    #[cfg(feature = "async")]
-    /// The queue of wakers of the tx channel
-    pub tx_wakers: Mutex<VecDeque<Waker>>,
-    #[cfg(feature = "async")]
-    /// The queue of wakers of the rx channel
-    pub rx_wakers: Mutex<VecDeque<Waker>>,
+    pub rx_channel: Option<Arc<AxiDMAChannel>>,
 }
 
 /// The configuration structure for AXI DMA engine.
@@ -366,12 +361,12 @@ impl AxiDma {
     /// Create the AxiDMA instance according to the configuration
     pub fn new(cfg: AxiDmaConfig) -> Self {
         let tx_channel = if cfg.has_mm2s {
-            Some(Mutex::new(AxiDMAChannel::new(channel::Direaction::TX, &cfg)))
+            Some(Arc::new(AxiDMAChannel::new(channel::Direaction::TX, &cfg)))
         } else {
             None
         };
         let rx_channel = if cfg.has_s2mm {
-            Some(Mutex::new(AxiDMAChannel::new(channel::Direaction::RX, &cfg)))
+            Some(Arc::new(AxiDMAChannel::new(channel::Direaction::RX, &cfg)))
         } else {
             None
         };
@@ -383,15 +378,12 @@ impl AxiDma {
             tx_channel,
             rx_channel,
             is_initialized: AtomicBool::new(false),
-            #[cfg(feature = "async")]
-            tx_wakers: Mutex::new(VecDeque::new()),
-            #[cfg(feature = "async")]
-            rx_wakers: Mutex::new(VecDeque::new()),
         }
     }
 
     /// Get the registers of the AxiDMA
     #[inline]
+    #[allow(unused)]
     fn hardware(&self) -> &axidma_pac::axi_dma::RegisterBlock {
         unsafe { &*(self.base_address as *const _) }
     }
@@ -399,10 +391,10 @@ impl AxiDma {
     /// Reset the AxiDMA
     pub fn reset(self: &Arc<Self>) -> AxiDMAResult {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().reset()?;
+            tx_channel.reset()?;
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().reset()?;
+            rx_channel.reset()?;
         }
         let mut timeout = AxiDma::RESET_TIMEOUT;
         while timeout > 0 && !self.reset_is_done() {
@@ -420,12 +412,12 @@ impl AxiDma {
     // Check reset is done when both went normal
     fn reset_is_done(self: &Arc<Self>) -> bool {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            if !tx_channel.lock().reset_is_done() {
+            if !tx_channel.reset_is_done() {
                 return false;
             }
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            if !rx_channel.lock().reset_is_done() {
+            if !rx_channel.reset_is_done() {
                 return false;
             }
         }
@@ -435,20 +427,20 @@ impl AxiDma {
     /// Enable the cyclic mode
     pub fn cyclic_enable(self: &Arc<Self>) {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().cyclic_enable();
+            tx_channel.cyclic_enable();
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().cyclic_enable();
+            rx_channel.cyclic_enable();
         }
     }
 
     /// Disable the cyclic mode
     pub fn cyclic_disable(self: &Arc<Self>) {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().cyclic_disable();
+            tx_channel.cyclic_disable();
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().cyclic_disable();
+            rx_channel.cyclic_disable();
         }
     }
 
@@ -459,10 +451,10 @@ impl AxiDma {
             return Err(AxiDMAErr::NotInit);
         }
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().start()?;
+            tx_channel.start()?;
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().start()?;
+            rx_channel.start()?;
         }
         Ok(())
     }
@@ -474,10 +466,10 @@ impl AxiDma {
             return Err(AxiDMAErr::NotInit);
         }
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().stop()?;
+            tx_channel.stop()?;
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().stop()?;
+            rx_channel.stop()?;
         }
         Ok(())
     }
@@ -495,27 +487,26 @@ impl AxiDma {
     /// Disable the interrupt
     pub fn intr_disable(self: &Arc<Self>) {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            let _ = tx_channel.lock().intr_disable();
+            let _ = tx_channel.intr_disable();
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            let _ = rx_channel.lock().intr_disable();
+            let _ = rx_channel.intr_disable();
         }
     }
 
     /// Enable the interrupt
     pub fn intr_enable(self: &Arc<Self>) {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            let _ = tx_channel.lock().intr_enable();
+            let _ = tx_channel.intr_enable();
         }
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            let _ = rx_channel.lock().intr_enable();
+            let _ = rx_channel.intr_enable();
         }
     }
 
     /// Initialize the tx channel
     pub fn tx_channel_create(self: &Arc<Self>, bd_count: usize) -> AxiDMAResult {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            let mut tx_channel = tx_channel.lock();
             tx_channel.intr_disable();
             tx_channel.create(bd_count)?;
         }
@@ -525,7 +516,6 @@ impl AxiDma {
     /// Initialize the rx channel
     pub fn rx_channel_create(self: &Arc<Self>, bd_count: usize) -> AxiDMAResult {
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            let mut rx_channel = rx_channel.lock();
             rx_channel.intr_disable();
             rx_channel.create(bd_count)?;
         }
@@ -533,172 +523,31 @@ impl AxiDma {
     }
 
     /// Submit a buffer to the tx channel
-    pub fn tx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<TxTransfer<B>, AxiDMAErr>
+    pub fn tx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<Transfer<B>, AxiDMAErr>
     where
         B: Deref,
         B::Target: AsRef<[u8]>,
     {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().submit(&buffer)?;
-            return Ok(TxTransfer::new(buffer, self.clone()));
+            tx_channel.submit(&buffer)?;
+            return Ok(Transfer::new(buffer, tx_channel.clone()));
         }
         log::error!("axidma::tx_from_hw: no tx ring!");
         Err(AxiDMAErr::BDRingNoList)
     }
 
     /// Submit a buffer to the rx channel
-    pub fn rx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<RxTransfer<B>, AxiDMAErr>
+    pub fn rx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<Transfer<B>, AxiDMAErr>
     where
         B: Deref,
         B::Target: AsRef<[u8]>,
     {
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().submit(&buffer)?;
-            return Ok(RxTransfer::new(buffer, self.clone()));
+            rx_channel.submit(&buffer)?;
+            return Ok(Transfer::new(buffer, rx_channel.clone()));
         }
         log::error!("axidma::tx_from_hw: no tx ring!");
         Err(AxiDMAErr::BDRingNoList)
-    }
-
-    /// Retrieve the completed buffer descriptor from tx channel
-    pub fn tx_from_hw(self: &Arc<Self>) -> AxiDMAResult {
-        if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.lock().from_hw()
-        } else {
-            log::error!("axidma::tx_from_hw: no tx ring!");
-            Err(AxiDMAErr::BDRingNoList)
-        }
-        
-    }
-
-    /// Retrieve the completed buffer descriptor from rx channel
-    pub fn rx_from_hw(&self) -> AxiDMAResult {
-        if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.lock().from_hw()
-        } else {
-            log::error!("axidma::rx_from_hw: no rx ring!");
-            Err(AxiDMAErr::BDRingNoList)
-        }
-    }
-
-    // Wait the tx channel completing a transaction synchronously.
-    pub fn tx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().mm2s_dmasr().read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().mm2s_dmasr().read();
-        }
-    }
-
-    // Wait the rx channel completing a transaction synchronously.
-    pub fn rx_wait(self: &Arc<Self>) {
-        let mut status = self.hardware().s2mm_dmasr().read();
-        while status.ioc_irq().is_no_intr() && status.dly_irq().is_no_intr() && status.err_irq().is_no_intr() {
-            status = self.hardware().s2mm_dmasr().read();
-        }
-    }
-}
-
-/// The interrupt handler of AxiDMA
-pub struct AxiDmaIntr {
-    /// The base address, it is same as AxiDMA
-    base_address: usize,
-}
-
-impl AxiDmaIntr {
-
-    /// Create a new AxiDMAIntr
-    pub fn new(base_address: usize) -> Arc<Self> {
-        Arc::new(Self { base_address })
-    }
-
-    /// Get the register of the AxiDMA
-    #[inline]
-    fn hardware(&self) -> &axidma_pac::axi_dma::RegisterBlock {
-        unsafe { &*(self.base_address as *const _) }
-    }
-
-    /// The interrupt of tx channel
-    pub fn tx_intr_handler(self: &Arc<Self>) -> bool {
-        let sr = &self.hardware().mm2s_dmasr();
-        if sr.read().err_irq().is_detected() {
-            // dump regs
-            // reset
-            log::error!("axidma_intr: tx err intr detected");
-            self.tx_dump_regs();
-            sr.modify(|_, w| w.err_irq().set_bit());
-            return false;
-        }
-        if sr.read().ioc_irq().is_detected() {
-            log::trace!("axidma_intr: tx cplt intr detected");
-            sr.modify(|_, w| w.ioc_irq().set_bit());
-        }
-        if sr.read().dly_irq().is_detected() {
-            log::trace!("axidma_intr: tx dly intr detected");
-            sr.modify(|_, w| w.dly_irq().set_bit());
-        }
-        true
-    }
-
-    /// The interrupt of rx channel
-    pub fn rx_intr_handler(self: &Arc<Self>) -> bool {
-        let sr = &self.hardware().s2mm_dmasr();
-        if sr.read().err_irq().is_detected() {
-            // dump regs
-            // reset
-            log::error!("axidma: rx err intr detected");
-            self.rx_dump_regs();
-            sr.modify(|_, w| w.err_irq().set_bit());
-            return false;
-        }
-        if sr.read().ioc_irq().is_detected() {
-            log::trace!("axidma_intr: rx cplt intr detected");
-            sr.modify(|_, w| w.ioc_irq().set_bit());
-        }
-        if sr.read().dly_irq().is_detected() {
-            log::trace!("axidma_intr: rx dly intr detected");
-            sr.modify(|_, w| w.dly_irq().set_bit());
-        }
-        true
-    }
-
-    /// Dump the register of tx channel
-    pub fn tx_dump_regs(self: &Arc<Self>) {
-        let hw = self.hardware();
-        log::info!(
-            "CR: 0b{:b}, SR: 0b{:b}",
-            hw.mm2s_dmacr().read().bits(),
-            hw.mm2s_dmasr().read().bits()
-        );
-        log::info!(
-            "CDESC_MSB: 0x{:x}, CDESC: 0x{:x}",
-            hw.mm2s_curdesc_msb().read().bits(),
-            hw.mm2s_curdesc_msb().read().bits()
-        );
-        log::info!(
-            "TDESC_MSB: 0x{:x}, TDESC: 0x{:x}",
-            hw.mm2s_taildesc_msb().read().bits(),
-            hw.mm2s_taildesc().read().bits()
-        );
-    }
-
-    /// Dump the register of rx channel
-    pub fn rx_dump_regs(self: &Arc<Self>) {
-        let hw = self.hardware();
-        log::info!(
-            "CR: 0b{:b}, SR: 0b{:b}",
-            hw.s2mm_dmacr().read().bits(),
-            hw.s2mm_dmasr().read().bits()
-        );
-        log::info!(
-            "CDESC_MSB: 0x{:x}, CDESC: 0x{:x}",
-            hw.s2mm_curdesc_msb().read().bits(),
-            hw.s2mm_curdesc_msb().read().bits()
-        );
-        log::info!(
-            "TDESC_MSB: 0x{:x}, TDESC: 0x{:x}",
-            hw.s2mm_taildesc_msb().read().bits(),
-            hw.s2mm_taildesc().read().bits()
-        );
     }
 }
 
