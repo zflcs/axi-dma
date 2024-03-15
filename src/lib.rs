@@ -275,12 +275,13 @@ mod errno;
 mod transfer;
 mod hw;
 
+pub use transfer::Transfer;
+
 use core::{ops::Deref, pin::Pin, sync::atomic::AtomicBool};
 use alloc::sync::Arc;
 use channel::AxiDMAChannel;
 use errno::AxiDMAErr;
 use hw::AXI_DMA_CONFIG;
-use transfer::Transfer;
 use core::sync::atomic::Ordering;
 
 type AxiDMAResult = Result<(), AxiDMAErr>;
