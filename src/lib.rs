@@ -510,6 +510,7 @@ impl AxiDma {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
             tx_channel.intr_disable();
             tx_channel.create(bd_count)?;
+            return Ok(());
         }
         Err(AxiDMAErr::BDRingNoList)
     }
@@ -519,6 +520,7 @@ impl AxiDma {
         if let Some(rx_channel) = self.rx_channel.as_ref() {
             rx_channel.intr_disable();
             rx_channel.create(bd_count)?;
+            return Ok(());
         }
         Err(AxiDMAErr::BDRingNoList)
     }
