@@ -59,12 +59,12 @@ let _ = AXI_DMA.rx_channel_create(AXI_NET_CONFIG.rx_bd_cnt);
 AXI_DMA.intr_enable();
 
 /***********  submit a buffer and wait it synchronously *******************/ 
-let tx_frame = Box::pin([1u8; 20000]);
-let buf = AXI_DMA.tx_submit(tx_frame).unwrap().wait().unwrap();
+let mut buffer = vec![1u8; MTU].into_boxed_slice();
+let len = buffer.len();
+let buf_ptr = Box::into_raw(buffer) as *mut _;
+let buf = BufPtr::new(NonNull::new(buf_ptr).unwrap(), len);
 
-/***********  submit a buffer and wait it asynchronously *******************/ 
-let tx_frame = Box::pin([1u8; 20000]);
-let buf = AXI_DMA.tx_submit(tx_frame).unwrap().await;
+let _ = AXI_DMA.tx_submit(buf).unwrap().wait().unwrap();
 
 ```
 

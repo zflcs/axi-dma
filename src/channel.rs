@@ -207,6 +207,7 @@ impl AxiDMAChannel {
         self.hardware().dmacr().read().irq_threshold().bits() as _
     }
 
+    /// Submit a buffer to ring
     pub fn submit(&self, buffer: BufPtr) -> Result<BufPtr, AxiDMAErr> {
         if buffer.len() > self.max_transfer_len {
             error!("single buffer len has exceed max transfer len");
@@ -312,6 +313,7 @@ impl AxiDMAChannel {
         Ok(())
     }
 
+    /// Start a transfer
     pub fn to_hw(&self) -> AxiDMAResult {
         let hardware = self.hardware();
         let mut ring = self.ring.lock();
