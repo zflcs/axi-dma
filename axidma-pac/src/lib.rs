@@ -185,9 +185,7 @@ impl Peripherals {
     #[cfg(feature = "critical-section")]
     #[inline]
     pub fn take() -> Option<Self> {
-        critical_section::with(|_| {
-            Some(unsafe { Peripherals::steal() })
-        })
+        critical_section::with(|_| Some(unsafe { Peripherals::steal() }))
     }
     #[doc = r" Unchecked version of `Peripherals::take`."]
     #[doc = r""]

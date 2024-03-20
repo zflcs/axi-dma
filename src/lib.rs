@@ -1,38 +1,38 @@
 //! This is the driver API for the AXI DMA engine.
-//! 
-//! For a full description of DMA features, please see the hardware spec. 
+//!
+//! For a full description of DMA features, please see the hardware spec.
 //! This driver supports the following features:
 //!     - [x] Scatter-Gather DMA (SGDMA)
 //!     - [ ] Simple DMA
 //!     - [x] Interrupts
 //!     - [ ] Programmable interrupt coalescing for SGDMA
 //!     - [ ] APIs to manage Buffer Descriptors (BD) movement to and from the SGDMA engine
-//! 
+//!
 //! ### Simple DMA
-//! 
+//!
 //! Simple DMA allows the application to define a single transaction between DMA
 //! and Device. It has two channels: one from the DMA to Device and the other
 //! from Device to DMA. Application has to set the buffer address and
 //! length fields to initiate the transfer in respective channel.
-//! 
+//!
 //! ### Transactions
-//! 
+//!
 //! The object used to describe a transaction is referred to as a Buffer
 //! Descriptor (BD). Buffer descriptors are allocated in the user application.
 //! The user application needs to set buffer address, transfer length, and
 //! control information for this transfer. The control information includes
-//! SOF and EOF. Definition of those masks are in [xaxidma.h](https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/axidma/src/xaxidma.h) 
-//! 
+//! SOF and EOF. Definition of those masks are in [xaxidma.h](https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/axidma/src/xaxidma.h)
+//!
 //! ### Scatter-Gather DMA
-//! 
+//!
 //! SGDMA allows the application to define a list of transactions in memory which
 //! the hardware will process without further application intervention. During
 //! this time, the application is free to continue adding more work to keep the
 //! Hardware busy.
-//! 
+//!
 //! User can check for the completion of transactions through polling the
 //! hardware, or interrupts.
-//! 
+//!
 //! SGDMA processes whole packets. A packet is defined as a series of
 //! data bytes that represent a message. SGDMA allows a packet of data to be
 //! broken up into one or more transactions. For example, take an Ethernet IP
@@ -156,8 +156,8 @@
 //!   and connecting interrupt handlers and call back functions, before
 //!   enabling the interrupts.
 //!
-//! - Start a DMA transfer: Call submit() to start a transfer. 
-//!   Calling submit() when a DMA channel is not running 
+//! - Start a DMA transfer: Call submit() to start a transfer.
+//!   Calling submit() when a DMA channel is not running
 //!   will start the DMA channel.
 //!
 //! <b> How to start DMA transactions </b>
@@ -259,32 +259,32 @@
 //!
 //! To see the debug print for the driver, please put "TRACE" as the extra
 //! compiler flags in software platform settings.
-//! 
+//!
 
 #![no_std]
-#![feature(sync_unsafe_cell)]
-
 #[deny(missing_docs)]
 #[deny(unused)]
+#[macro_use]
+extern crate log;
 
 extern crate alloc;
 
 mod bd;
+mod buffer;
 mod channel;
 mod errno;
-mod transfer;
 mod hw;
+mod transfer;
 
-pub use transfer::Transfer;
-
-use core::{ops::Deref, pin::Pin, sync::atomic::AtomicBool};
 use alloc::sync::Arc;
+pub use buffer::BufPtr;
 use channel::AxiDMAChannel;
+use core::sync::atomic::{AtomicBool, Ordering};
 use errno::AxiDMAErr;
 use hw::AXI_DMA_CONFIG;
-use core::sync::atomic::Ordering;
+pub use transfer::Transfer;
 
-type AxiDMAResult = Result<(), AxiDMAErr>;
+pub type AxiDMAResult = Result<(), AxiDMAErr>;
 
 /// The AxiDma driver instance structure. An instance must be allocated for each DMA
 /// engine in use.
@@ -327,7 +327,7 @@ pub struct AxiDmaConfig {
     pub is_micro_dma: bool,
     /// Has tx channel
     pub has_mm2s: bool,
-    /// Whether the tx channel has enabled the data realignment 
+    /// Whether the tx channel has enabled the data realignment
     pub has_mm2s_dre: bool,
     /// The data width of tx channel
     pub mm2s_data_width: usize,
@@ -335,7 +335,7 @@ pub struct AxiDmaConfig {
     pub mm2s_burst_size: usize,
     /// Has rx channel
     pub has_s2mm: bool,
-    /// Whether the rx channel has enabled the data realignment 
+    /// Whether the rx channel has enabled the data realignment
     pub has_s2mm_dre: bool,
     /// The data width of rx channel
     pub s2mm_data_width: usize,
@@ -343,7 +343,7 @@ pub struct AxiDmaConfig {
     pub s2mm_burst_size: usize,
     /// Has Scatter Gather mode
     pub has_sg: bool,
-    /// The width of the buffer length field 
+    /// The width of the buffer length field
     pub sg_length_width: usize,
     /// the width of address
     pub addr_width: isize,
@@ -404,7 +404,7 @@ impl AxiDma {
         if timeout > 0 {
             self.is_initialized.store(true, Ordering::Relaxed);
         } else {
-            log::error!("AXIDMA: failed reset in intialization");
+            error!("AXIDMA: failed reset in intialization");
             return Err(AxiDMAErr::DMAErr);
         }
         Ok(())
@@ -448,7 +448,7 @@ impl AxiDma {
     /// Start the AxiDMA
     pub fn start(self: &Arc<Self>) -> AxiDMAResult {
         if !self.is_initialized.load(Ordering::Relaxed) {
-            log::error!("Start: Driver not initialized");
+            error!("Start: Driver not initialized");
             return Err(AxiDMAErr::NotInit);
         }
         if let Some(tx_channel) = self.tx_channel.as_ref() {
@@ -463,7 +463,7 @@ impl AxiDma {
     /// Pause the AxiDMA
     pub fn pause(self: &Arc<Self>) -> AxiDMAResult {
         if !self.is_initialized.load(Ordering::Relaxed) {
-            log::error!("Pause: Driver not initialized");
+            error!("Pause: Driver not initialized");
             return Err(AxiDMAErr::NotInit);
         }
         if let Some(tx_channel) = self.tx_channel.as_ref() {
@@ -478,7 +478,7 @@ impl AxiDma {
     /// Resume the AxiDMA
     pub fn resume(self: &Arc<Self>) -> AxiDMAResult {
         if !self.is_initialized.load(Ordering::Relaxed) {
-            log::error!("Resume: Driver not initialized");
+            error!("Resume: Driver not initialized");
             return Err(AxiDMAErr::NotInit);
         }
         self.start()?;
@@ -526,30 +526,24 @@ impl AxiDma {
     }
 
     /// Submit a buffer to the tx channel
-    pub fn tx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<Transfer<B>, AxiDMAErr>
-    where
-        B: Deref,
-        B::Target: AsRef<[u8]>,
-    {
+    pub fn tx_submit(self: &Arc<Self>, buffer: BufPtr) -> Result<Transfer, AxiDMAErr> {
         if let Some(tx_channel) = self.tx_channel.as_ref() {
-            tx_channel.submit(&buffer)?;
-            return Ok(Transfer::new(buffer, tx_channel.clone()));
+            let transfer = Transfer::new(tx_channel.submit(buffer)?, tx_channel.clone());
+            tx_channel.to_hw()?;
+            return Ok(transfer);
         }
-        log::error!("axidma::tx_from_hw: no tx ring!");
+        error!("axidma::tx_submit: no tx ring!");
         Err(AxiDMAErr::BDRingNoList)
     }
 
     /// Submit a buffer to the rx channel
-    pub fn rx_submit<B>(self: &Arc<Self>, buffer: Pin<B>) -> Result<Transfer<B>, AxiDMAErr>
-    where
-        B: Deref,
-        B::Target: AsRef<[u8]>,
-    {
+    pub fn rx_submit<B>(self: &Arc<Self>, buffer: BufPtr) -> Result<Transfer, AxiDMAErr> {
         if let Some(rx_channel) = self.rx_channel.as_ref() {
-            rx_channel.submit(&buffer)?;
-            return Ok(Transfer::new(buffer, rx_channel.clone()));
+            let transfer = Transfer::new(rx_channel.submit(buffer)?, rx_channel.clone());
+            rx_channel.to_hw()?;
+            return Ok(transfer);
         }
-        log::error!("axidma::tx_from_hw: no tx ring!");
+        error!("axidma::rx_submit: no rx ring!");
         Err(AxiDMAErr::BDRingNoList)
     }
 }
