@@ -40,18 +40,9 @@ pub struct AxiDMAChannel {
     // Mutable
     /// Buffer descriptor ring
     pub ring: Mutex<BDRing>,
-    /// Control field, it is also used in the interrupt handling.
-    /// We assume that there is only one core will do interrupt handling.
-    pub ctrl: Mutex<ControlFiled>,
 }
 
-/// The control of the channel
-pub struct ControlFiled {
-    /// check the interrupt enable
-    is_intr_enable: bool,
-    /// Check for cyclic DMA Mode
-    is_cyclic: bool,
-}
+
 
 /// The structure of BDRing, it must be access exclusively.
 pub struct BDRing {
@@ -118,10 +109,6 @@ impl AxiDMAChannel {
                 all_cnt: 0,
                 pending_cnt: 0,
                 submit_cnt: 0,
-            }),
-            ctrl: Mutex::new(ControlFiled {
-                is_intr_enable: false,
-                is_cyclic: false,
             }),
         }
     }
@@ -352,7 +339,6 @@ impl AxiDMAChannel {
         self.hardware()
             .dmacr()
             .write(|w| w.cyclic_enable().set_bit());
-        self.ctrl.lock().is_cyclic = true;
     }
 
     /// Disable the cyclic mode of this channel
@@ -360,7 +346,6 @@ impl AxiDMAChannel {
         self.hardware()
             .dmacr()
             .write(|w| w.cyclic_enable().clear_bit());
-        self.ctrl.lock().is_cyclic = false;
     }
 
     /// Disable the interrupt of this channel.
@@ -374,7 +359,6 @@ impl AxiDMAChannel {
                 .ioc_irq_en()
                 .disable()
         });
-        self.ctrl.lock().is_intr_enable = false;
     }
 
     /// Enable the interrupt of this channel.
@@ -388,7 +372,6 @@ impl AxiDMAChannel {
                 .ioc_irq_en()
                 .enable()
         });
-        self.ctrl.lock().is_intr_enable = true;
     }
 
     /// Check whether a transaction is completed
@@ -401,27 +384,24 @@ impl AxiDMAChannel {
 
     /// The interrupt handler
     pub fn intr_handler(&self) -> AxiDMAResult {
-        let ctrl = self.ctrl.lock();
         // If the channel disables the interrupt, it will do nothing.
-        if ctrl.is_intr_enable {
-            let sr = self.hardware().dmasr();
-            let status = sr.read();
-            if status.err_irq().is_detected() {
-                // dump regs
-                // reset
-                trace!("axidma_intr: err intr detected");
-                self.dump_regs();
-                sr.modify(|_, w| w.err_irq().set_bit());
-                return Err(AxiDMAErr::IntrErr);
-            }
-            if status.ioc_irq().is_detected() {
-                trace!("axidma_intr: cplt intr detected");
-                sr.modify(|_, w| w.ioc_irq().set_bit());
-            }
-            if status.dly_irq().is_detected() {
-                trace!("axidma_intr: dly intr detected");
-                sr.modify(|_, w| w.dly_irq().set_bit());
-            }
+        let sr = self.hardware().dmasr();
+        let status = sr.read();
+        if status.err_irq().is_detected() {
+            // dump regs
+            // reset
+            trace!("axidma_intr: err intr detected");
+            self.dump_regs();
+            sr.modify(|_, w| w.err_irq().set_bit());
+            return Err(AxiDMAErr::IntrErr);
+        }
+        if status.ioc_irq().is_detected() {
+            trace!("axidma_intr: cplt intr detected");
+            sr.modify(|_, w| w.ioc_irq().set_bit());
+        }
+        if status.dly_irq().is_detected() {
+            trace!("axidma_intr: dly intr detected");
+            sr.modify(|_, w| w.dly_irq().set_bit());
         }
         Ok(())
     }

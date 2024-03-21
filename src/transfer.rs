@@ -44,6 +44,15 @@ impl Transfer {
             .take()
             .unwrap_or_else(|| unsafe { hint::unreachable_unchecked() }))
     }
+
+    /// Blocks until the transfer is done and returns the buffer, the
+    pub fn recycle(mut self) -> Result<BufPtr, AxiDMAErr> {
+        self.channel.from_hw()?;
+        Ok(self
+            .buffer
+            .take()
+            .unwrap_or_else(|| unsafe { hint::unreachable_unchecked() }))
+    }
 }
 
 #[cfg(feature = "async")]
