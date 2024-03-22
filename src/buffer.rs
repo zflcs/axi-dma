@@ -7,6 +7,9 @@ pub struct BufPtr {
     len: usize,
 }
 
+unsafe impl Send for BufPtr {}
+unsafe impl Sync for BufPtr {}
+
 impl BufPtr {
     /// Create a new [`NetBufPtr`].
     pub fn new(buf_ptr: NonNull<u8>, len: usize) -> Self {

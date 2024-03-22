@@ -1,8 +1,5 @@
 use alloc::sync::Arc;
-use core::{
-    hint,
-    sync::atomic::{self, Ordering},
-};
+use core::hint;
 
 use crate::{channel::AxiDMAChannel, errno::AxiDMAErr, BufPtr};
 
@@ -35,7 +32,6 @@ impl Transfer {
     /// Blocks until the transfer is done and returns the buffer, the
     pub fn wait(mut self) -> Result<BufPtr, AxiDMAErr> {
         self.channel.wait();
-        atomic::compiler_fence(Ordering::SeqCst);
         self.channel.from_hw()?;
         // Deal the interrupt
         self.channel.intr_handler()?;
@@ -65,25 +61,27 @@ use core::{
 };
 
 #[cfg(feature = "async")]
+use core::pin::Pin;
+
+#[cfg(feature = "async")]
 impl Future for Transfer {
     type Output = BufPtr;
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         if !self.flag {
             if !self.channel.check_cmplt() {
                 let waker = cx.waker();
-                self.channel.ctrl.lock().wakers.push_back(waker.clone());
+                self.channel.wakers.lock().push_back(waker.clone());
                 log::trace!("async transfer pending");
                 self.flag = true;
                 return Poll::Pending;
             }
         }
         log::trace!("async transfer ready");
-        atomic::compiler_fence(Ordering::SeqCst);
+        let _ = self.channel.from_hw().unwrap();
         let buf = self
             .buffer
             .take()
             .unwrap_or_else(|| unsafe { hint::unreachable_unchecked() });
-        let _ = self.channel.from_hw();
         return Poll::Ready(buf);
     }
 }

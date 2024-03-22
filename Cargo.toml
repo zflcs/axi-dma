@@ -13,8 +13,7 @@ spin = "0.9"
 
 
 [features]
-
 async = []
 
-# default = ["async"]
+default = []
 

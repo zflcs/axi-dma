@@ -11,6 +11,8 @@ use alloc::{boxed::Box, collections::VecDeque};
 use core::pin::Pin;
 use core::sync::atomic::{compiler_fence, fence, Ordering::SeqCst};
 use spin::Mutex;
+#[cfg(feature = "async")]
+use core::task::Waker;
 
 /// The channel direction
 #[derive(Debug)]
@@ -40,6 +42,10 @@ pub struct AxiDMAChannel {
     // Mutable
     /// Buffer descriptor ring
     pub ring: Mutex<BDRing>,
+
+    #[cfg(feature = "async")]
+    /// future wakers
+    pub wakers: Mutex<VecDeque<Waker>>,
 }
 
 
@@ -110,6 +116,8 @@ impl AxiDMAChannel {
                 pending_cnt: 0,
                 submit_cnt: 0,
             }),
+            #[cfg(feature = "async")]
+            wakers: Mutex::new(VecDeque::new()),
         }
     }
 
@@ -307,7 +315,7 @@ impl AxiDMAChannel {
         if ring.is_halted {
             let addr = ring.head_desc_addr();
             self.update_cur_bd(addr);
-            trace!("axidma::tx_to_hw: cur desc addr: 0x{:x}", addr);
+            trace!("axidma::to_hw: cur desc addr: 0x{:x}", addr);
         }
         compiler_fence(SeqCst);
         fence(SeqCst);
