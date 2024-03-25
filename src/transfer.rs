@@ -71,12 +71,10 @@ impl Future for Transfer {
             if !self.channel.check_cmplt() {
                 let waker = cx.waker();
                 self.channel.wakers.lock().push_back(waker.clone());
-                log::trace!("async transfer pending");
                 self.flag = true;
                 return Poll::Pending;
             }
         }
-        log::trace!("async transfer ready");
         let _ = self.channel.from_hw().unwrap();
         let buf = self
             .buffer

@@ -1,6 +1,7 @@
 use core::ptr::NonNull;
 
 /// A raw buffer struct.
+#[derive(Clone, Debug)]
 pub struct BufPtr {
     // The pointer to the buffer.
     buf_ptr: NonNull<u8>,
