@@ -537,7 +537,7 @@ impl AxiDma {
     }
 
     /// Submit a buffer to the rx channel
-    pub fn rx_submit<B>(self: &Arc<Self>, buffer: BufPtr) -> Result<Transfer, AxiDMAErr> {
+    pub fn rx_submit(self: &Arc<Self>, buffer: BufPtr) -> Result<Transfer, AxiDMAErr> {
         if let Some(rx_channel) = self.rx_channel.as_ref() {
             let transfer = Transfer::new(rx_channel.submit(buffer)?, rx_channel.clone());
             rx_channel.to_hw()?;
