@@ -66,16 +66,13 @@ use core::pin::Pin;
 #[cfg(feature = "async")]
 impl Future for Transfer {
     type Output = BufPtr;
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         if !self.flag {
-            if !self.channel.check_cmplt() {
-                let waker = cx.waker();
-                self.channel.wakers.lock().push_back(waker.clone());
-                self.flag = true;
-                return Poll::Pending;
-            }
+            self.flag = true;
+            return Poll::Pending;
         }
         let _ = self.channel.from_hw().unwrap();
+        let _ = self.channel.intr_handler().unwrap();
         let buf = self
             .buffer
             .take()
