@@ -264,13 +264,11 @@ impl AxiDMAChannel {
 
         loop {
             let bd = &ring.bds[cur_bd];
-            // unsafe { ebreak() };
             let status = bd.desc.status().read();
             // Check the status of buffer descriptor, if is not completed, this action must be stopped.
             if status.cmplt().is_false() {
-                // unsafe { ebreak() };
                 trace!("bd_ring::from_hw: Uncompleted BD found at {}", cur_bd);
-                bd.dump();
+                // bd.dump();
                 break;
             }
             bd_cnt += 1;
@@ -302,8 +300,6 @@ impl AxiDMAChannel {
             ring.submit_cnt -= bd_cnt;
             ring.free_cnt += bd_cnt;
             trace!("bd_ring::from_hw: free_cnt: {}", ring.free_cnt);
-        } else {
-            warn!("bd_ring::from_hw: no completed BD!");
         }
         Ok(())
     }
