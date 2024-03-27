@@ -102,6 +102,7 @@ impl AxiDmaBD {
         Ok(())
     }
     /// Dump the fields of a BD.
+    #[allow(unused)]
     pub fn dump(&self) {
         let d = &self.desc;
         info!(
