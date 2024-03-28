@@ -248,7 +248,7 @@ impl AxiDMAChannel {
     }
 
     /// Retrieve the BD from hardware
-    pub fn from_hw(&self) -> AxiDMAResult {
+    pub fn from_hw(&self) -> Result<usize, AxiDMAErr> {
         let mut ring = self.ring.lock();
         let mut bd_cnt = 0;
         let mut partial_cnt = 0;
@@ -301,7 +301,7 @@ impl AxiDMAChannel {
             ring.free_cnt += bd_cnt;
             trace!("bd_ring::from_hw: free_cnt: {}", ring.free_cnt);
         }
-        Ok(())
+        Ok(bd_cnt)
     }
 
     /// Start a transfer
@@ -325,6 +325,11 @@ impl AxiDMAChannel {
             self.update_tail_bd(ring.tail_desc_addr());
         }
         Ok(())
+    }
+
+    /// Check out whether the channel has free block descriptor
+    pub fn has_free_bd(&self) -> bool {
+        self.ring.lock().free_cnt > 0
     }
 
     /// Wait the channel completing a transaction synchronously.
