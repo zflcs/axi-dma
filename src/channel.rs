@@ -254,9 +254,9 @@ impl AxiDMAChannel {
         let mut partial_cnt = 0;
         let mut cur_bd = ring.bd_head;
         trace!(
-            "bd_ring::from_hw: head: {}, tail: {}",
-            ring.bd_head,
-            ring.bd_tail
+        "bd_ring::from_hw: head: {}, tail: {}",
+        ring.bd_head,
+        ring.bd_tail
         );
         compiler_fence(SeqCst);
         fence(SeqCst);
@@ -335,7 +335,7 @@ impl AxiDMAChannel {
     /// Wait the channel completing a transaction synchronously.
     pub fn wait(&self) {
         let mut status = self.hardware().dmasr().read();
-        while status.ioc_irq().is_no_intr()
+        while status.idle().is_not_idle() && status.ioc_irq().is_no_intr()
             && status.dly_irq().is_no_intr()
             && status.err_irq().is_no_intr()
         {
