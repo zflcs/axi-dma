@@ -51,6 +51,18 @@ impl Transfer {
     }
 }
 
+impl Drop for Transfer {
+    fn drop(&mut self) {
+        let mut bufptr = self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() });
+        let len = bufptr.len();
+        let raw_ptr = bufptr.as_mut_ptr();
+        let slice = unsafe {
+            core::slice::from_raw_parts_mut(raw_ptr, len)
+        };
+        let _buf = unsafe { alloc::boxed::Box::from_raw(slice) };
+    }
+}
+
 #[cfg(feature = "async")]
 impl Unpin for Transfer {}
 
