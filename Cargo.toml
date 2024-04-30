@@ -14,6 +14,7 @@ spin = "0.9"
 
 [features]
 async = []
+driver_test = []
 
 default = []
 

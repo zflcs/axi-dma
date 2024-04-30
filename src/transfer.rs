@@ -51,6 +51,7 @@ impl Transfer {
     }
 }
 
+#[cfg(not(feature = "driver_test"))]
 impl Drop for Transfer {
     fn drop(&mut self) {
         let mut bufptr = self.buffer.take().unwrap_or_else(|| unsafe { hint::unreachable_unchecked() });
